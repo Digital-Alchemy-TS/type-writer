@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { CreateApplication } from "@digital-alchemy/core";
-import { LIB_HASS } from "@digital-alchemy/core/hass";
+import { LIB_HASS } from "@digital-alchemy/hass";
 
 import { BuildTypes } from "./build.extension";
 import { TypeWriter } from "./type-writer.extension";

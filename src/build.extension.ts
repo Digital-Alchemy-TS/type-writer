@@ -12,8 +12,14 @@ export function BuildTypes({
   // ? join(__dirname, "..", "home-assistant", "src", "dynamic.d.ts")
   lifecycle.onReady(async () => {
     try {
+      // install location
+      // node_modules/@digital-alchemy/type-writer/dist/index.js
+      //
+      // relative target file
+      // ../../hass/dist/dynamic.d.ts
+      //
       const path = is.empty(config.type_writer.TARGET_FILE)
-        ? join(__dirname, "..", "hass", "dynamic.d.ts")
+        ? join(__dirname, "..", "..", "hass", "dist", "dynamic.d.ts")
         : config.type_writer.TARGET_FILE;
       if (!existsSync(path)) {
         if (config.type_writer.TARGET_FILE !== path) {

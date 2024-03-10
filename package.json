@@ -1,14 +1,19 @@
 {
-  "name": "@digital-alchemy/automation",
-  "repository": "https://github.com/Digital-Alchemy-TS",
-  "version": "0.0.17",
+  "name": "@digital-alchemy/type-writer",
+  "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
+  "version": "0.2.0",
   "scripts": {
     "build": "tsc",
+    "lint": "eslint src",
+    "prepublishOnly": "npm run build",
     "upgrade": "ncu -u; npm i"
   },
   "author": {
     "url": "https://github.com/zoe-codez",
     "name": "Zoe Codez"
+  },
+  "bin": {
+    "type-writer": "./dist/main.js"
   },
   "files": [
     "dist/**/*"
@@ -16,12 +21,10 @@
   "engines": {
     "node": ">=20"
   },
-  "exports": {
-    ".": "./dist/index.js"
-  },
   "license": "MIT",
   "dependencies": {
-    "@digital-alchemy/core": "^0.1.17",
+    "@digital-alchemy/core": "^0.2.0",
+    "@digital-alchemy/hass": "^0.2.0",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
@@ -31,7 +34,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/minimist": "^1.2.5",
     "@types/mute-stream": "^0.0.4",
-    "@types/node": "^20.11.24",
+    "@types/node": "^20.11.25",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
@@ -52,7 +55,7 @@
     "prettier": "^3.2.5",
     "ts-jest": "^29.1.2",
     "tsx": "^4.7.1",
-    "type-fest": "^4.11.1",
-    "typescript": "^5.3.3"
+    "type-fest": "^4.12.0",
+    "typescript": "^5.4.2"
   }
 }

@@ -4,7 +4,7 @@ import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
 import {
   ServiceListFieldDescription,
   ServiceListServiceTarget,
-} from "@digital-alchemy/core/hass";
+} from "@digital-alchemy/hass";
 import { dump } from "js-yaml";
 import {
   addSyntheticLeadingComment,
