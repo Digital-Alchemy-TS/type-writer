@@ -1,7 +1,7 @@
 {
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
@@ -23,8 +23,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@digital-alchemy/core": "^0.2.2",
-    "@digital-alchemy/hass": "^0.2.1",
+    "@digital-alchemy/core": "^0.2.3",
+    "@digital-alchemy/hass": "^0.2.4",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
