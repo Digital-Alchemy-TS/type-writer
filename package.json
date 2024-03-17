@@ -1,9 +1,10 @@
 {
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
-  "version": "0.2.2",
+  "homepage": "https://docs.digital-alchemy.app/04-Minor-Applications/04.01-Type-Writer/%F0%9F%A7%AD-Type-Writer-Overview",
+  "version": "0.3.0",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
     "prepublishOnly": "npm run build",
     "upgrade": "ncu -u; npm i"
@@ -23,8 +24,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@digital-alchemy/core": "^0.2.3",
-    "@digital-alchemy/hass": "^0.2.4",
+    "@digital-alchemy/core": "^0.3.2",
+    "@digital-alchemy/hass": "^0.3.2",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
@@ -34,7 +35,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/minimist": "^1.2.5",
     "@types/mute-stream": "^0.0.4",
-    "@types/node": "^20.11.27",
+    "@types/node": "^20.11.28",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "7.2.0",
     "@typescript-eslint/parser": "7.2.0",
@@ -51,7 +52,7 @@
     "eslint-plugin-unicorn": "^51.0.1",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
-    "npm-check-updates": "^16.14.15",
+    "npm-check-updates": "^16.14.17",
     "prettier": "^3.2.5",
     "ts-jest": "^29.1.2",
     "tsx": "^4.7.1",
