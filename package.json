@@ -2,7 +2,7 @@
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
   "homepage": "https://docs.digital-alchemy.app/04-Minor-Applications/04.01-Type-Writer/%F0%9F%A7%AD-Type-Writer-Overview",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "scripts": {
     "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
