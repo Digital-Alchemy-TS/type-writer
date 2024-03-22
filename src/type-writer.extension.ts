@@ -96,7 +96,7 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
                                     ),
                                   createTarget(
                                     value.target as ServiceListServiceTarget,
-                                    domain
+                                    domain,
                                   ),
                                 ].filter(
                                   i => !is.undefined(i),
@@ -134,7 +134,10 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
       resultFile,
     );
 
-    function createTarget(target: ServiceListServiceTarget, fallbackDomain: string) {
+    function createTarget(
+      target: ServiceListServiceTarget,
+      fallbackDomain: string,
+    ) {
       if (is.empty(target)) {
         return undefined;
       }
@@ -172,7 +175,10 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
      *
      * This block is specifically for refining the `entity_id` type definitions
      */
-    function generateEntityList(target: ServiceListServiceTarget, fallbackDomain: string) {
+    function generateEntityList(
+      target: ServiceListServiceTarget,
+      fallbackDomain: string,
+    ) {
       const isEmpty =
         is.empty(target.entity) || target.entity.every(i => is.empty(i));
       if (isEmpty) {
