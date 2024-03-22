@@ -96,6 +96,7 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
                                     ),
                                   createTarget(
                                     value.target as ServiceListServiceTarget,
+                                    domain,
                                   ),
                                 ].filter(
                                   i => !is.undefined(i),
@@ -133,7 +134,10 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
       resultFile,
     );
 
-    function createTarget(target: ServiceListServiceTarget) {
+    function createTarget(
+      target: ServiceListServiceTarget,
+      fallbackDomain: string,
+    ) {
       if (is.empty(target)) {
         return undefined;
       }
@@ -142,7 +146,7 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
           undefined,
           factory.createIdentifier("entity_id"),
           undefined,
-          generateEntityList(target),
+          generateEntityList(target, fallbackDomain),
         );
         return addSyntheticLeadingComment(
           property,
@@ -171,7 +175,10 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
      *
      * This block is specifically for refining the `entity_id` type definitions
      */
-    function generateEntityList(target: ServiceListServiceTarget) {
+    function generateEntityList(
+      target: ServiceListServiceTarget,
+      fallbackDomain: string,
+    ) {
       const isEmpty =
         is.empty(target.entity) || target.entity.every(i => is.empty(i));
       if (isEmpty) {
@@ -191,7 +198,7 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
         );
       }
       const domain = target.entity.find(i => !is.empty(i.domain))?.domain;
-      const domainReference = domain.shift();
+      const domainReference = domain?.shift() ?? fallbackDomain;
       return factory.createParenthesizedType(
         factory.createUnionTypeNode([
           factory.createTypeReferenceNode(
