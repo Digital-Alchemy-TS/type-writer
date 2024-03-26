@@ -7,8 +7,8 @@ Get detailed information about services, which entities are available (or not), 
 
 This script should be run after updating dependencies, any time you alter your setup, right before you open your editor, or whenever you feel like it. Nobody is judging.
 
-- Extended docs: https://docs.digital-alchemy.app/Type-Writer
-- Discord: https://discord.digital-alchemy.app
+- [Extended docs](https://docs.digital-alchemy.app/Type-Writer)
+- [Discord](https://discord.com/invite/mtWHk36upW)
 
 ![editor](./docs/editor.png)
 ## 🚀 Usage
