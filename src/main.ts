@@ -3,7 +3,9 @@ import { CreateApplication } from "@digital-alchemy/core";
 import { LIB_HASS } from "@digital-alchemy/hass";
 
 import { BuildTypes } from "./build.extension";
-import { TypeWriter } from "./type-writer.extension";
+import { ICallServiceExtension } from "./i-call-service.extension";
+import { Identifiers } from "./identifiers.extension";
+import { Printer } from "./printer.extension";
 
 export const TYPE_WRITER = CreateApplication({
   configuration: {
@@ -17,7 +19,9 @@ export const TYPE_WRITER = CreateApplication({
   name: "type_writer",
   services: {
     build: BuildTypes,
-    type_writer: TypeWriter,
+    call_service: ICallServiceExtension,
+    identifiers: Identifiers,
+    printer: Printer,
   },
 });
 setImmediate(async () => {
@@ -27,7 +31,6 @@ setImmediate(async () => {
         LOG_LEVEL: "warn",
       },
       hass: {
-        AUTO_CONNECT_SOCKET: false,
         AUTO_SCAN_CALL_PROXY: false,
       },
     },

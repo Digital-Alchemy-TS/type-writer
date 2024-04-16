@@ -1,139 +1,28 @@
-/* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable unicorn/consistent-function-scoping */
 import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
 import {
+  HassServiceDTO,
+  ServiceListField,
   ServiceListFieldDescription,
   ServiceListServiceTarget,
 } from "@digital-alchemy/hass";
 import { dump } from "js-yaml";
 import {
   addSyntheticLeadingComment,
-  createPrinter,
-  createSourceFile,
-  EmitHint,
   factory,
-  NewLineKind,
-  ScriptKind,
-  ScriptTarget,
   SyntaxKind,
   TypeElement,
   TypeNode,
 } from "typescript";
-
-const printer = createPrinter({ newLine: NewLineKind.LineFeed });
-const resultFile = createSourceFile(
-  "",
-  "",
-  ScriptTarget.Latest,
-  false,
-  ScriptKind.TS,
-);
-let lastBuild: string;
-let lastServices: string;
-
-export async function TypeWriter({ hass, logger }: TServiceParams) {
+export async function ICallServiceExtension({
+  hass,
+  logger,
+  type_writer,
+}: TServiceParams) {
   return async function () {
     const domains = await hass.fetch.listServices();
-    const stringified = JSON.stringify(domains);
-    if (stringified === lastServices) {
-      return lastBuild;
-    }
-    // logger.info(`Services updated`);
-    lastServices = stringified;
-    lastBuild = printer.printNode(
-      EmitHint.Unspecified,
-      // Wrap all this into a top level `interface iCallService`
-      factory.createTypeAliasDeclaration(
-        [factory.createModifier(SyntaxKind.ExportKeyword)],
-        factory.createIdentifier("iCallService"),
-        undefined,
-        // Create categories based off domain name
-        // { domain: {...services} }
-        factory.createTypeLiteralNode(
-          domains
-            .sort((a, b) => (a.domain > b.domain ? UP : DOWN))
-            .map(({ domain, services }) =>
-              factory.createPropertySignature(
-                undefined,
-                factory.createIdentifier(domain),
-                undefined,
-                factory.createTypeLiteralNode(
-                  // Create functions based on provided services
-                  // { [...service_name](service_data): Promise<void> }
-                  Object.entries(services)
-                    .sort(([a], [b]) => (a > b ? UP : DOWN))
-                    .map(([key, value]) =>
-                      addSyntheticLeadingComment(
-                        factory.createMethodSignature(
-                          undefined,
-                          factory.createIdentifier(key),
-                          undefined,
-                          undefined,
-                          [
-                            // f( service_data: { ...definition } )
-                            //    Provide this        ^^^^^^
-                            factory.createParameterDeclaration(
-                              undefined,
-                              undefined,
-                              factory.createIdentifier("service_data"),
-                              // ? If all the parameters are optional, then don't require the data at all
-                              Object.values(value.fields).some(i =>
-                                is.boolean(i.required) ? !i.required : true,
-                              )
-                                ? factory.createToken(SyntaxKind.QuestionToken)
-                                : undefined,
-                              factory.createTypeLiteralNode(
-                                [
-                                  ...Object.entries(value.fields)
-                                    .sort(([a], [b]) => (a > b ? UP : DOWN))
-                                    .map(([service, details]) =>
-                                      fieldPropertySignature(
-                                        service,
-                                        details,
-                                        domain,
-                                        key,
-                                      ),
-                                    ),
-                                  createTarget(
-                                    value.target as ServiceListServiceTarget,
-                                    domain,
-                                  ),
-                                ].filter(
-                                  i => !is.undefined(i),
-                                ) as TypeElement[],
-                              ),
-                            ),
-                          ],
-                          factory.createTypeReferenceNode(
-                            factory.createIdentifier("Promise"),
-                            [
-                              factory.createKeywordTypeNode(
-                                SyntaxKind.VoidKeyword,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SyntaxKind.MultiLineCommentTrivia,
-                        `*\n` +
-                          [
-                            `### ${value.name || key}`,
-                            "",
-                            ...value.description.split("\n").map(i => `> ${i}`),
-                          ]
-                            .map(i => ` * ${i}`)
-                            .join(`\n`) +
-                          "\n ",
-                        true,
-                      ),
-                    ),
-                ),
-              ),
-            ),
-        ),
-      ),
-      resultFile,
-    );
 
+    // #MARK: createTarget
     function createTarget(
       target: ServiceListServiceTarget,
       fallbackDomain: string,
@@ -170,6 +59,7 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
       return undefined;
     }
 
+    // #MARK: generateEntityList
     /**
      * # entity_id
      *
@@ -223,10 +113,7 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
       );
     }
 
-    // function getDomain(target: ServiceListEntityTarget) {
-    //   return target.
-    // }
-
+    // #MARK: fieldPropertySignature
     function fieldPropertySignature(
       parameterName: string,
       { selector, ...details }: ServiceListFieldDescription,
@@ -304,11 +191,12 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
       return addSyntheticLeadingComment(
         property,
         SyntaxKind.MultiLineCommentTrivia,
-        buildParameterMultilineComment(parameterName, { selector, ...details }),
+        parameterComment(parameterName, { selector, ...details }),
         true,
       );
     }
 
+    // #MARK: handleSelectors
     function handleSelectors(
       serviceDomain: string,
       serviceName: string,
@@ -353,7 +241,8 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
       ]);
     }
 
-    function buildParameterMultilineComment(
+    // #MARK: parameterComment
+    function parameterComment(
       parameterName: string,
       { selector, ...details }: ServiceListFieldDescription,
     ) {
@@ -396,6 +285,102 @@ export async function TypeWriter({ hass, logger }: TServiceParams) {
       out = out + "`\n ";
       return out;
     }
-    return lastBuild;
+
+    // #MARK: ServiceComment
+    function serviceComment(key: string, value: ServiceListField) {
+      return (
+        `*\n` +
+        [
+          `### ${value.name || key}`,
+          "",
+          ...value.description.split("\n").map(i => `> ${i}`),
+        ]
+          .map(i => ` * ${i}`)
+          .join(`\n`) +
+        "\n "
+      );
+    }
+
+    // #MARK: BuildServiceParameters
+    function serviceParameters(
+      domain: string,
+      key: string,
+      value: ServiceListField,
+    ) {
+      return [
+        // f( service_data: { ...definition } )
+        //    Provide this        ^^^^^^
+        factory.createParameterDeclaration(
+          undefined,
+          undefined,
+          factory.createIdentifier("service_data"),
+          // ? If all the parameters are optional, then don't require the data at all
+          Object.values(value.fields).some(i =>
+            is.boolean(i.required) ? !i.required : true,
+          )
+            ? factory.createToken(SyntaxKind.QuestionToken)
+            : undefined,
+          factory.createTypeLiteralNode(
+            [
+              ...Object.entries(value.fields)
+                .sort(([a], [b]) => (a > b ? UP : DOWN))
+                .map(([service, details]) =>
+                  fieldPropertySignature(service, details, domain, key),
+                ),
+              createTarget(value.target as ServiceListServiceTarget, domain),
+            ].filter(i => !is.undefined(i)) as TypeElement[],
+          ),
+        ),
+      ];
+    }
+
+    // #MARK: BuildService
+    function buildService(
+      domain: string,
+      key: string,
+      value: ServiceListField,
+    ) {
+      return addSyntheticLeadingComment(
+        factory.createMethodSignature(
+          undefined,
+          factory.createIdentifier(key),
+          undefined,
+          undefined,
+          serviceParameters(domain, key, value),
+          factory.createTypeReferenceNode(factory.createIdentifier("Promise"), [
+            factory.createKeywordTypeNode(SyntaxKind.VoidKeyword),
+          ]),
+        ),
+        SyntaxKind.MultiLineCommentTrivia,
+        serviceComment(key, value),
+        true,
+      );
+    }
+
+    // #MARK: BuildDomain
+    function buildDomain({ domain, services }: HassServiceDTO) {
+      return factory.createPropertySignature(
+        undefined,
+        factory.createIdentifier(domain),
+        undefined,
+        factory.createTypeLiteralNode(
+          // Create functions based on provided services
+          // { [...service_name](service_data): Promise<void> }
+          Object.entries(services)
+            .sort(([a], [b]) => (a > b ? UP : DOWN))
+            .map(([key, value]) => buildService(domain, key, value)),
+        ),
+      );
+    }
+
+    // #MARK: final build
+    return type_writer.printer(
+      "iCallService",
+      factory.createTypeLiteralNode(
+        domains
+          .sort((a, b) => (a.domain > b.domain ? UP : DOWN))
+          .map(domain => buildDomain(domain)),
+      ),
+    );
   };
 }
