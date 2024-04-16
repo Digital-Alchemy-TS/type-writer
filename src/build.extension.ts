@@ -56,11 +56,7 @@ export function BuildTypes({
       `import { PICK_ENTITY } from "./helpers";`,
       `export const ENTITY_SETUP = ${JSON.stringify(entitySetup, undefined, "  ")};`,
       typeInterface,
-      type_writer.identifiers.area(),
-      type_writer.identifiers.device(),
-      type_writer.identifiers.floor(),
-      type_writer.identifiers.label(),
-      type_writer.identifiers.zone(),
+      type_writer.identifiers(),
     ].join(`\n\n`);
   }
 }
