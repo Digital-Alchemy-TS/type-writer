@@ -2,7 +2,7 @@
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
   "homepage": "https://docs.digital-alchemy.app/Type-Writer",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "scripts": {
     "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
@@ -26,7 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "@digital-alchemy/core": "^0.3.11",
-    "@digital-alchemy/hass": "^0.3.10",
+    "@digital-alchemy/hass": "^0.3.13",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
@@ -38,8 +38,8 @@
     "@types/mute-stream": "^0.0.4",
     "@types/node": "^20.12.7",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "7.6.0",
-    "@typescript-eslint/parser": "7.6.0",
+    "@typescript-eslint/eslint-plugin": "7.7.0",
+    "@typescript-eslint/parser": "7.7.0",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "^2.29.1",

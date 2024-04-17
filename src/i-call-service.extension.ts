@@ -359,17 +359,22 @@ export async function ICallServiceExtension({
 
     // #MARK: BuildDomain
     function buildDomain({ domain, services }: HassServiceDTO) {
-      return factory.createPropertySignature(
-        undefined,
-        factory.createIdentifier(domain),
-        undefined,
-        factory.createTypeLiteralNode(
-          // Create functions based on provided services
-          // { [...service_name](service_data): Promise<void> }
-          Object.entries(services)
-            .sort(([a], [b]) => (a > b ? UP : DOWN))
-            .map(([key, value]) => buildService(domain, key, value)),
+      return addSyntheticLeadingComment(
+        factory.createPropertySignature(
+          undefined,
+          factory.createIdentifier(domain),
+          undefined,
+          factory.createTypeLiteralNode(
+            // Create functions based on provided services
+            // { [...service_name](service_data): Promise<void> }
+            Object.entries(services)
+              .sort(([a], [b]) => (a > b ? UP : DOWN))
+              .map(([key, value]) => buildService(domain, key, value)),
+          ),
         ),
+        SyntaxKind.SingleLineCommentTrivia,
+        `#MARK: ${domain}`,
+        true,
       );
     }
 
