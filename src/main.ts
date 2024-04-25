@@ -10,8 +10,7 @@ import { Printer } from "./printer.extension";
 export const TYPE_WRITER = CreateApplication({
   configuration: {
     TARGET_FILE: {
-      description:
-        "Define a file to write types to. Autodetect = default behavior",
+      description: "Define a file to write types to. Autodetect = default behavior",
       type: "string",
     },
   },
@@ -27,12 +26,8 @@ export const TYPE_WRITER = CreateApplication({
 setImmediate(async () => {
   await TYPE_WRITER.bootstrap({
     configuration: {
-      boilerplate: {
-        LOG_LEVEL: "warn",
-      },
-      hass: {
-        AUTO_SCAN_CALL_PROXY: false,
-      },
+      boilerplate: { LOG_LEVEL: "warn" },
+      hass: { AUTO_SCAN_CALL_PROXY: false },
     },
   });
 });

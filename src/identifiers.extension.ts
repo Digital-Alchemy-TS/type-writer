@@ -18,9 +18,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       return factory.createKeywordTypeNode(SyntaxKind.NeverKeyword);
     }
     return factory.createUnionTypeNode(
-      list.map(i =>
-        factory.createLiteralTypeNode(factory.createStringLiteral(i)),
-      ),
+      list.map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i))),
     );
   }
 
@@ -57,9 +55,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
         ),
         RegistryType(
           "device",
-          hass.device.current.map(({ id }) =>
-            ItemObject(`_${id}`, hass.entity.byDevice(id)),
-          ),
+          hass.device.current.map(({ id }) => ItemObject(`_${id}`, hass.entity.byDevice(id))),
         ),
       ]),
     );
@@ -74,9 +70,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
           : factory.createUnionTypeNode(
               hass.area.current.map(i =>
-                factory.createLiteralTypeNode(
-                  factory.createStringLiteral(i.area_id),
-                ),
+                factory.createLiteralTypeNode(factory.createStringLiteral(i.area_id)),
               ),
             ),
       );
@@ -88,9 +82,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
           : factory.createUnionTypeNode(
               hass.device.current.map(i =>
-                factory.createLiteralTypeNode(
-                  factory.createStringLiteral(i.id),
-                ),
+                factory.createLiteralTypeNode(factory.createStringLiteral(i.id)),
               ),
             ),
       );
@@ -101,9 +93,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
         factory.createUnionTypeNode(
           is
             .unique(list.map(i => domain(i.entity_id)))
-            .map(i =>
-              factory.createLiteralTypeNode(factory.createStringLiteral(i)),
-            ),
+            .map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i))),
         ),
       );
     },
@@ -111,11 +101,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       return type_writer.printer(
         "TRawEntityIds",
         factory.createUnionTypeNode(
-          list.map(i =>
-            factory.createLiteralTypeNode(
-              factory.createStringLiteral(i.entity_id),
-            ),
-          ),
+          list.map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i.entity_id))),
         ),
       );
     },
@@ -126,9 +112,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
           : factory.createUnionTypeNode(
               hass.floor.current.map(i =>
-                factory.createLiteralTypeNode(
-                  factory.createStringLiteral(i.floor_id),
-                ),
+                factory.createLiteralTypeNode(factory.createStringLiteral(i.floor_id)),
               ),
             ),
       );
@@ -140,9 +124,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
           : factory.createUnionTypeNode(
               hass.label.current.map(i =>
-                factory.createLiteralTypeNode(
-                  factory.createStringLiteral(i.label_id),
-                ),
+                factory.createLiteralTypeNode(factory.createStringLiteral(i.label_id)),
               ),
             ),
       );
@@ -154,9 +136,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
           : factory.createUnionTypeNode(
               hass.zone.current.map(i =>
-                factory.createLiteralTypeNode(
-                  factory.createStringLiteral(i.id),
-                ),
+                factory.createLiteralTypeNode(factory.createStringLiteral(i.id)),
               ),
             ),
       );

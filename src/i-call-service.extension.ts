@@ -4,29 +4,17 @@ import {
   HassServiceDTO,
   ServiceListField,
   ServiceListFieldDescription,
+  ServiceListSelector,
   ServiceListServiceTarget,
 } from "@digital-alchemy/hass";
 import { dump } from "js-yaml";
-import {
-  addSyntheticLeadingComment,
-  factory,
-  SyntaxKind,
-  TypeElement,
-  TypeNode,
-} from "typescript";
-export async function ICallServiceExtension({
-  hass,
-  logger,
-  type_writer,
-}: TServiceParams) {
+import { addSyntheticLeadingComment, factory, SyntaxKind, TypeElement, TypeNode } from "typescript";
+export async function ICallServiceExtension({ hass, logger, type_writer }: TServiceParams) {
   return async function () {
     const domains = await hass.fetch.listServices();
 
     // #MARK: createTarget
-    function createTarget(
-      target: ServiceListServiceTarget,
-      fallbackDomain: string,
-    ) {
+    function createTarget(target: ServiceListServiceTarget, fallbackDomain: string) {
       if (is.empty(target)) {
         return undefined;
       }
@@ -40,9 +28,7 @@ export async function ICallServiceExtension({
         return addSyntheticLeadingComment(
           property,
           SyntaxKind.MultiLineCommentTrivia,
-          "*\n" +
-            ["Assisted definition"].map(i => ` * ${i}`).join(`\n`) +
-            "\n ",
+          "*\n" + ["Assisted definition"].map(i => ` * ${i}`).join(`\n`) + "\n ",
           true,
         );
       }
@@ -65,24 +51,14 @@ export async function ICallServiceExtension({
      *
      * This block is specifically for refining the `entity_id` type definitions
      */
-    function generateEntityList(
-      target: ServiceListServiceTarget,
-      fallbackDomain: string,
-    ) {
-      const isEmpty =
-        is.empty(target.entity) || target.entity.every(i => is.empty(i));
+    function generateEntityList(target: ServiceListServiceTarget, fallbackDomain: string) {
+      const isEmpty = is.empty(target.entity) || target.entity.every(i => is.empty(i));
       if (isEmpty) {
         return factory.createParenthesizedType(
           factory.createUnionTypeNode([
-            factory.createTypeReferenceNode(
-              factory.createIdentifier("PICK_ENTITY"),
-              undefined,
-            ),
+            factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), undefined),
             factory.createArrayTypeNode(
-              factory.createTypeReferenceNode(
-                factory.createIdentifier("PICK_ENTITY"),
-                undefined,
-              ),
+              factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), undefined),
             ),
           ]),
         );
@@ -91,26 +67,37 @@ export async function ICallServiceExtension({
       const domainReference = domain?.shift() ?? fallbackDomain;
       return factory.createParenthesizedType(
         factory.createUnionTypeNode([
-          factory.createTypeReferenceNode(
-            factory.createIdentifier("PICK_ENTITY"),
-            [
-              factory.createLiteralTypeNode(
-                factory.createStringLiteral(domainReference),
-              ),
-            ],
-          ),
+          factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), [
+            factory.createLiteralTypeNode(factory.createStringLiteral(domainReference)),
+          ]),
           factory.createArrayTypeNode(
-            factory.createTypeReferenceNode(
-              factory.createIdentifier("PICK_ENTITY"),
-              [
-                factory.createLiteralTypeNode(
-                  factory.createStringLiteral(domainReference),
-                ),
-              ],
-            ),
+            factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), [
+              factory.createLiteralTypeNode(factory.createStringLiteral(domainReference)),
+            ]),
           ),
         ]),
       );
+    }
+
+    // #MARK: buildEntityReference
+    function buildEntityReference(domain: string, selector: ServiceListSelector) {
+      let node: TypeNode;
+      const type = is.empty(domain)
+        ? factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"))
+        : factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), [
+            factory.createLiteralTypeNode(factory.createStringLiteral(domain)),
+          ]);
+
+      if (selector?.entity?.multiple) {
+        node = factory.createArrayTypeNode(type);
+      } else {
+        node = is.empty(domain)
+          ? type
+          : factory.createParenthesizedType(
+              factory.createUnionTypeNode([type, factory.createArrayTypeNode(type)]),
+            );
+      }
+      return node;
     }
 
     // #MARK: fieldPropertySignature
@@ -133,38 +120,14 @@ export async function ICallServiceExtension({
         node = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
       // string | `domain.${keyof typeof ENTITY_SETUP.domain}`
       else if (!is.undefined(selector?.entity))
-        node = is.empty(domain)
-          ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
-          : factory.createParenthesizedType(
-              factory.createUnionTypeNode([
-                factory.createTypeReferenceNode(
-                  factory.createIdentifier("PICK_ENTITY"),
-                  [
-                    factory.createLiteralTypeNode(
-                      factory.createStringLiteral(domain),
-                    ),
-                  ],
-                ),
-                factory.createArrayTypeNode(
-                  factory.createTypeReferenceNode(
-                    factory.createIdentifier("PICK_ENTITY"),
-                    [
-                      factory.createLiteralTypeNode(
-                        factory.createStringLiteral(domain),
-                      ),
-                    ],
-                  ),
-                ),
-              ]),
-            );
+        // some combination of:
+        // : PICK_ENTITY | PICK_ENTITY[] | PICK_ENTITY<"domain"> | PICK_ENTITY<"domain">[]
+        node = buildEntityReference(domain, selector);
       // : "option" | "option" | "option" | "option"
       else if (!is.undefined(selector?.select))
         node = factory.createUnionTypeNode(
-          selector?.select.options.map(
-            (i: string | Record<"label" | "value", string>) =>
-              factory.createLiteralTypeNode(
-                factory.createStringLiteral(is.string(i) ? i : i.value),
-              ),
+          selector?.select.options.map((i: string | Record<"label" | "value", string>) =>
+            factory.createLiteralTypeNode(factory.createStringLiteral(is.string(i) ? i : i.value)),
           ),
         );
       // : Record<string, unknown> | (unknown[]);
@@ -183,9 +146,7 @@ export async function ICallServiceExtension({
       const property = factory.createPropertySignature(
         undefined,
         factory.createIdentifier(parameterName),
-        details.required
-          ? undefined
-          : factory.createToken(SyntaxKind.QuestionToken),
+        details.required ? undefined : factory.createToken(SyntaxKind.QuestionToken),
         node,
       );
       return addSyntheticLeadingComment(
@@ -211,32 +172,18 @@ export async function ICallServiceExtension({
 
       return factory.createUnionTypeNode([
         serviceDomain === "scene" && serviceName === "apply"
-          ? factory.createTypeReferenceNode(
-              factory.createIdentifier("Partial"),
-              [
-                factory.createTypeReferenceNode(
-                  factory.createIdentifier("Record"),
-                  [
-                    factory.createTypeReferenceNode(
-                      factory.createIdentifier("PICK_ENTITY"),
-                      undefined,
-                    ),
-                    factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
-                  ],
-                ),
-              ],
-            )
-          : factory.createTypeReferenceNode(
-              factory.createIdentifier("Record"),
-              [
-                factory.createKeywordTypeNode(SyntaxKind.StringKeyword),
+          ? factory.createTypeReferenceNode(factory.createIdentifier("Partial"), [
+              factory.createTypeReferenceNode(factory.createIdentifier("Record"), [
+                factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), undefined),
                 factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
-              ],
-            ),
+              ]),
+            ])
+          : factory.createTypeReferenceNode(factory.createIdentifier("Record"), [
+              factory.createKeywordTypeNode(SyntaxKind.StringKeyword),
+              factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
+            ]),
         factory.createParenthesizedType(
-          factory.createArrayTypeNode(
-            factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
-          ),
+          factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword)),
         ),
       ]);
     }
@@ -254,14 +201,7 @@ export async function ICallServiceExtension({
           ...(is.empty(details.description) ? [] : ["", details.description]),
           ...(is.empty(example)
             ? []
-            : [
-                "",
-                `### Example`,
-                "",
-                "```json",
-                JSON.stringify(example, undefined, "  "),
-                "```",
-              ]),
+            : ["", `### Example`, "", "```json", JSON.stringify(example, undefined, "  "), "```"]),
           ...(is.undefined(details.default)
             ? []
             : [
@@ -290,11 +230,7 @@ export async function ICallServiceExtension({
     function serviceComment(key: string, value: ServiceListField) {
       return (
         `*\n` +
-        [
-          `### ${value.name || key}`,
-          "",
-          ...value.description.split("\n").map(i => `> ${i}`),
-        ]
+        [`### ${value.name || key}`, "", ...value.description.split("\n").map(i => `> ${i}`)]
           .map(i => ` * ${i}`)
           .join(`\n`) +
         "\n "
@@ -302,11 +238,7 @@ export async function ICallServiceExtension({
     }
 
     // #MARK: BuildServiceParameters
-    function serviceParameters(
-      domain: string,
-      key: string,
-      value: ServiceListField,
-    ) {
+    function serviceParameters(domain: string, key: string, value: ServiceListField) {
       return [
         // f( service_data: { ...definition } )
         //    Provide this        ^^^^^^
@@ -315,18 +247,14 @@ export async function ICallServiceExtension({
           undefined,
           factory.createIdentifier("service_data"),
           // ? If all the parameters are optional, then don't require the data at all
-          Object.values(value.fields).some(i =>
-            is.boolean(i.required) ? !i.required : true,
-          )
+          Object.values(value.fields).some(i => (is.boolean(i.required) ? !i.required : true))
             ? factory.createToken(SyntaxKind.QuestionToken)
             : undefined,
           factory.createTypeLiteralNode(
             [
               ...Object.entries(value.fields)
                 .sort(([a], [b]) => (a > b ? UP : DOWN))
-                .map(([service, details]) =>
-                  fieldPropertySignature(service, details, domain, key),
-                ),
+                .map(([service, details]) => fieldPropertySignature(service, details, domain, key)),
               createTarget(value.target as ServiceListServiceTarget, domain),
             ].filter(i => !is.undefined(i)) as TypeElement[],
           ),
@@ -335,11 +263,7 @@ export async function ICallServiceExtension({
     }
 
     // #MARK: BuildService
-    function buildService(
-      domain: string,
-      key: string,
-      value: ServiceListField,
-    ) {
+    function buildService(domain: string, key: string, value: ServiceListField) {
       return addSyntheticLeadingComment(
         factory.createMethodSignature(
           undefined,

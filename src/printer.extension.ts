@@ -12,13 +12,7 @@ import {
 
 export function Printer() {
   const printer = createPrinter({ newLine: NewLineKind.LineFeed });
-  const resultFile = createSourceFile(
-    "",
-    "",
-    ScriptTarget.Latest,
-    false,
-    ScriptKind.TS,
-  );
+  const resultFile = createSourceFile("", "", ScriptTarget.Latest, false, ScriptKind.TS);
 
   return function (name: string, types: TypeNode) {
     return printer.printNode(
