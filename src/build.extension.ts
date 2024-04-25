@@ -1,5 +1,4 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
-import { PICK_ENTITY } from "@digital-alchemy/hass";
 import { existsSync, writeFileSync } from "fs";
 import { join } from "path";
 import { exit } from "process";
