@@ -80,6 +80,9 @@ export function BuildTypes({
       `// #MARK: TRawEntityIds`,
       type_writer.identifiers.entityIds(entities),
       ``,
+      `// #MARK: TPlatformId`,
+      type_writer.identifiers.platforms(),
+      ``,
       `// #MARK: TRawDomains`,
       type_writer.identifiers.domains(entities),
     ].join(`\n`);
