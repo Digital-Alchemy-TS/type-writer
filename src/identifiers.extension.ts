@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 import { is, TServiceParams } from "@digital-alchemy/core";
-import { domain, ENTITY_STATE, PICK_ENTITY, TPlatformId } from "@digital-alchemy/hass";
+import { domain, ENTITY_STATE, PICK_ENTITY } from "@digital-alchemy/hass";
 import { factory, PropertySignature, SyntaxKind } from "typescript";
 
 export function Identifiers({ hass, type_writer }: TServiceParams) {

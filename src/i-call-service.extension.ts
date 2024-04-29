@@ -1,104 +1,15 @@
-/* eslint-disable unicorn/consistent-function-scoping */
 import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
 import {
   HassServiceDTO,
   ServiceListField,
   ServiceListFieldDescription,
-  ServiceListSelector,
   ServiceListServiceTarget,
 } from "@digital-alchemy/hass";
-import { dump } from "js-yaml";
-import { addSyntheticLeadingComment, factory, SyntaxKind, TypeElement, TypeNode } from "typescript";
-export async function ICallServiceExtension({ hass, logger, type_writer }: TServiceParams) {
+import { factory, SyntaxKind, TypeElement, TypeNode } from "typescript";
+
+export async function ICallServiceExtension({ hass, type_writer }: TServiceParams) {
   return async function () {
     const domains = await hass.fetch.listServices();
-
-    // #MARK: createTarget
-    function createTarget(target: ServiceListServiceTarget, fallbackDomain: string) {
-      if (is.empty(target)) {
-        return undefined;
-      }
-      if (target.entity) {
-        const property = factory.createPropertySignature(
-          undefined,
-          factory.createIdentifier("entity_id"),
-          undefined,
-          generateEntityList(target, fallbackDomain),
-        );
-        return addSyntheticLeadingComment(
-          property,
-          SyntaxKind.MultiLineCommentTrivia,
-          "*\n" + ["Assisted definition"].map(i => ` * ${i}`).join(`\n`) + "\n ",
-          true,
-        );
-      }
-      if (target.integration) {
-        return undefined;
-      }
-      if (target.device) {
-        return undefined;
-      }
-      logger.error(
-        { target },
-        `this#createTarget doesn't know what to do with target. Report as bug with this log line`,
-      );
-      return undefined;
-    }
-
-    // #MARK: generateEntityList
-    /**
-     * # entity_id
-     *
-     * This block is specifically for refining the `entity_id` type definitions
-     */
-    function generateEntityList(target: ServiceListServiceTarget, fallbackDomain: string) {
-      const isEmpty = is.empty(target.entity) || target.entity.every(i => is.empty(i));
-      if (isEmpty) {
-        return factory.createParenthesizedType(
-          factory.createUnionTypeNode([
-            factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), undefined),
-            factory.createArrayTypeNode(
-              factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), undefined),
-            ),
-          ]),
-        );
-      }
-      const domain = target.entity.find(i => !is.empty(i.domain))?.domain;
-      const domainReference = domain?.shift() ?? fallbackDomain;
-      return factory.createParenthesizedType(
-        factory.createUnionTypeNode([
-          factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), [
-            factory.createLiteralTypeNode(factory.createStringLiteral(domainReference)),
-          ]),
-          factory.createArrayTypeNode(
-            factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), [
-              factory.createLiteralTypeNode(factory.createStringLiteral(domainReference)),
-            ]),
-          ),
-        ]),
-      );
-    }
-
-    // #MARK: buildEntityReference
-    function buildEntityReference(domain: string, selector: ServiceListSelector) {
-      let node: TypeNode;
-      const type = is.empty(domain)
-        ? factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"))
-        : factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), [
-            factory.createLiteralTypeNode(factory.createStringLiteral(domain)),
-          ]);
-
-      if (selector?.entity?.multiple) {
-        node = factory.createArrayTypeNode(type);
-      } else {
-        node = is.empty(domain)
-          ? type
-          : factory.createParenthesizedType(
-              factory.createUnionTypeNode([type, factory.createArrayTypeNode(type)]),
-            );
-      }
-      return node;
-    }
 
     // #MARK: fieldPropertySignature
     function fieldPropertySignature(
@@ -120,9 +31,8 @@ export async function ICallServiceExtension({ hass, logger, type_writer }: TServ
         node = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
       // string | `domain.${keyof typeof ENTITY_SETUP.domain}`
       else if (!is.undefined(selector?.entity))
-        // some combination of:
-        // : PICK_ENTITY | PICK_ENTITY[] | PICK_ENTITY<"domain"> | PICK_ENTITY<"domain">[]
-        node = buildEntityReference(domain, selector);
+        // some combination of: PICK_ENTITY | PICK_ENTITY[] | PICK_ENTITY<"domain"> | PICK_ENTITY<"domain">[]
+        node = type_writer.entity.buildEntityReference(domain, selector);
       // : "option" | "option" | "option" | "option"
       else if (!is.undefined(selector?.select))
         node = factory.createUnionTypeNode(
@@ -143,17 +53,15 @@ export async function ICallServiceExtension({ hass, logger, type_writer }: TServ
         });
       }
 
-      const property = factory.createPropertySignature(
-        undefined,
-        factory.createIdentifier(parameterName),
-        details.required ? undefined : factory.createToken(SyntaxKind.QuestionToken),
-        node,
-      );
-      return addSyntheticLeadingComment(
-        property,
-        SyntaxKind.MultiLineCommentTrivia,
-        parameterComment(parameterName, { selector, ...details }),
-        true,
+      return type_writer.tsdoc.parameterComment(
+        factory.createPropertySignature(
+          undefined,
+          factory.createIdentifier(parameterName),
+          details.required ? undefined : factory.createToken(SyntaxKind.QuestionToken),
+          node,
+        ),
+        parameterName,
+        { selector, ...details },
       );
     }
 
@@ -188,55 +96,6 @@ export async function ICallServiceExtension({ hass, logger, type_writer }: TServ
       ]);
     }
 
-    // #MARK: parameterComment
-    function parameterComment(
-      parameterName: string,
-      { selector, ...details }: ServiceListFieldDescription,
-    ) {
-      const example = String(details.example ?? "");
-      let out =
-        `*\n` +
-        [
-          "## " + (is.empty(details.name) ? parameterName : details.name),
-          ...(is.empty(details.description) ? [] : ["", details.description]),
-          ...(is.empty(example)
-            ? []
-            : ["", `### Example`, "", "```json", JSON.stringify(example, undefined, "  "), "```"]),
-          ...(is.undefined(details.default)
-            ? []
-            : [
-                "",
-                `### Default`,
-                "",
-                "```json",
-                ...JSON.stringify(details.default).split("\n"),
-                "```",
-              ]),
-          "",
-
-          "## Selector",
-          "",
-          "```yaml",
-          dump(selector).trim(),
-          "```",
-        ]
-          .map(i => ` * ${i}`)
-          .join(`\n`);
-      out = out + "`\n ";
-      return out;
-    }
-
-    // #MARK: ServiceComment
-    function serviceComment(key: string, value: ServiceListField) {
-      return (
-        `*\n` +
-        [`### ${value.name || key}`, "", ...value.description.split("\n").map(i => `> ${i}`)]
-          .map(i => ` * ${i}`)
-          .join(`\n`) +
-        "\n "
-      );
-    }
-
     // #MARK: BuildServiceParameters
     function serviceParameters(domain: string, key: string, value: ServiceListField) {
       return [
@@ -255,7 +114,7 @@ export async function ICallServiceExtension({ hass, logger, type_writer }: TServ
               ...Object.entries(value.fields)
                 .sort(([a], [b]) => (a > b ? UP : DOWN))
                 .map(([service, details]) => fieldPropertySignature(service, details, domain, key)),
-              createTarget(value.target as ServiceListServiceTarget, domain),
+              type_writer.entity.createTarget(value.target as ServiceListServiceTarget),
             ].filter(i => !is.undefined(i)) as TypeElement[],
           ),
         ),
@@ -264,7 +123,7 @@ export async function ICallServiceExtension({ hass, logger, type_writer }: TServ
 
     // #MARK: BuildService
     function buildService(domain: string, key: string, value: ServiceListField) {
-      return addSyntheticLeadingComment(
+      return type_writer.tsdoc.serviceComment(
         factory.createMethodSignature(
           undefined,
           factory.createIdentifier(key),
@@ -275,15 +134,14 @@ export async function ICallServiceExtension({ hass, logger, type_writer }: TServ
             factory.createKeywordTypeNode(SyntaxKind.VoidKeyword),
           ]),
         ),
-        SyntaxKind.MultiLineCommentTrivia,
-        serviceComment(key, value),
-        true,
+        key,
+        value,
       );
     }
 
     // #MARK: BuildDomain
     function buildDomain({ domain, services }: HassServiceDTO) {
-      return addSyntheticLeadingComment(
+      return type_writer.tsdoc.domainMarker(
         factory.createPropertySignature(
           undefined,
           factory.createIdentifier(domain),
@@ -296,9 +154,7 @@ export async function ICallServiceExtension({ hass, logger, type_writer }: TServ
               .map(([key, value]) => buildService(domain, key, value)),
           ),
         ),
-        SyntaxKind.SingleLineCommentTrivia,
-        `#MARK: ${domain}`,
-        true,
+        domain,
       );
     }
 
