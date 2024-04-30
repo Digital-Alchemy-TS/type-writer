@@ -22,6 +22,10 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
     );
   }
 
+  function uniquePlatforms() {
+    return is.unique(hass.entity.registry.current.map(i => i.platform));
+  }
+
   function ItemObject(name: string, entities: PICK_ENTITY[]) {
     return factory.createPropertySignature(
       undefined,
@@ -39,6 +43,12 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
           "area",
           hass.area.current.map(({ area_id }) =>
             ItemObject(`_${area_id}`, hass.entity.byArea(area_id)),
+          ),
+        ),
+        RegistryType(
+          "platform",
+          uniquePlatforms().map(platform =>
+            ItemObject(`_${platform}`, hass.entity.byPlatform(platform)),
           ),
         ),
         RegistryType(
@@ -127,6 +137,14 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
                 factory.createLiteralTypeNode(factory.createStringLiteral(i.label_id)),
               ),
             ),
+      );
+    },
+    platforms() {
+      return type_writer.printer(
+        "TPlatformId",
+        factory.createUnionTypeNode(
+          uniquePlatforms().map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i))),
+        ),
       );
     },
     zone() {

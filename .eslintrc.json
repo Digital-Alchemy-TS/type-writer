@@ -61,6 +61,7 @@
               "dir": false,
               "i": false,
               "params": false,
+              "doc": false,
               "props": false,
               "ref": false,
               "temp": false
@@ -73,6 +74,7 @@
         "unicorn/no-array-for-each": "off",
         "unicorn/import-style": "off",
         "sort-keys-fix/sort-keys-fix": "warn",
+        "unicorn/consistent-function-scoping": "off",
         "unicorn/prefer-event-target": "off",
         "simple-import-sort/imports": "warn",
         "simple-import-sort/exports": "warn",
