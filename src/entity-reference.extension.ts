@@ -7,7 +7,7 @@ import {
   TPlatformId,
 } from "@digital-alchemy/hass";
 import { dump } from "js-yaml";
-import { addSyntheticLeadingComment, factory, SyntaxKind, TypeNode } from "typescript";
+import { addSyntheticLeadingComment, factory, SyntaxKind } from "typescript";
 
 // * asdf
 type TargetReference = {
@@ -74,6 +74,15 @@ export function EntityReference({ logger }: TServiceParams) {
     );
   }
 
+  // #MARK: buildEntityReference
+  function buildEntityReference(selector: ServiceListSelector) {
+    const entity = selector.entity;
+    return buildTargetReference({
+      domain: is.empty(entity?.domain) ? [] : [entity.domain],
+      platform: entity?.integration,
+    });
+  }
+
   // #MARK: generateEntityList
   function generateEntityList(target: ServiceListServiceTarget) {
     return buildTargetReference({
@@ -117,32 +126,8 @@ export function EntityReference({ logger }: TServiceParams) {
     if (target.device) {
       return undefined;
     }
-    logger.error(
-      { target },
-      `this#createTarget doesn't know what to do with target. Report as bug with this log line`,
-    );
+    logger.error({ target }, `createTarget doesn't know what to do with target`);
     return undefined;
-  }
-
-  // #MARK: buildEntityReference
-  function buildEntityReference(domain: string, selector: ServiceListSelector) {
-    let node: TypeNode;
-    const type = is.empty(domain)
-      ? factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"))
-      : factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), [
-          factory.createLiteralTypeNode(factory.createStringLiteral(domain)),
-        ]);
-
-    if (selector?.entity?.multiple) {
-      node = factory.createArrayTypeNode(type);
-    } else {
-      node = is.empty(domain)
-        ? type
-        : factory.createParenthesizedType(
-            factory.createUnionTypeNode([type, factory.createArrayTypeNode(type)]),
-          );
-    }
-    return node;
   }
 
   return { buildEntityReference, createTarget };

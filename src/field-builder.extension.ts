@@ -42,7 +42,6 @@ export function FieldBuilder({ type_writer }: TServiceParams) {
     serviceName: string,
   ) {
     let node: TypeNode;
-    const { domain } = selector?.entity ?? {};
     // : boolean
     if (!is.undefined(selector?.boolean))
       node = factory.createKeywordTypeNode(SyntaxKind.BooleanKeyword);
@@ -55,7 +54,7 @@ export function FieldBuilder({ type_writer }: TServiceParams) {
     // string | `domain.${keyof typeof ENTITY_SETUP.domain}`
     else if (!is.undefined(selector?.entity))
       // some combination of: PICK_ENTITY | PICK_ENTITY[] | PICK_ENTITY<"domain"> | PICK_ENTITY<"domain">[]
-      node = type_writer.entity.buildEntityReference(domain, selector);
+      node = type_writer.entity.buildEntityReference(selector);
     // : "option" | "option" | "option" | "option"
     else if (!is.undefined(selector?.select))
       node = factory.createUnionTypeNode(
