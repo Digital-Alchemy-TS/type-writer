@@ -5,7 +5,7 @@ import { exit } from "process";
 
 const PICK_FROM_PLATFORM = `type PICK_FROM_PLATFORM<
   ID extends TPlatformId,
-  DOMAIN extends ALL_DOMAINS = ALL_DOMAINS,
+  DOMAIN extends TRawDomains = TRawDomains,
 > = Extract<REGISTRY_SETUP["platform"][\`_\${ID}\`], PICK_ENTITY<DOMAIN>>;`;
 
 export function BuildTypes({
