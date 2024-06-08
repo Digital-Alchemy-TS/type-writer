@@ -14,6 +14,7 @@ export * from "./lock.extension";
 export * from "./media-player.extension";
 export * from "./notify.extension";
 export * from "./number.extension";
+export * from "./person.extension";
 export * from "./remote.extension";
 export * from "./scene.extension";
 export * from "./select.extension";
