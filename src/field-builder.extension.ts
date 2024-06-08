@@ -5,14 +5,32 @@ import { factory, SyntaxKind, TypeNode } from "typescript";
 export function FieldBuilder({ type_writer }: TServiceParams) {
   // #MARK: handleSelectors
   function handleSelectors(
+    parameterName: string,
     serviceDomain: string,
     serviceName: string,
     { selector }: ServiceListFieldDescription,
   ) {
     if ("object" in selector && selector.object === null) {
-      // if (serviceDomain === "conversation") {
-      // console.log({ serviceDomain, serviceName }, selector, options);
-      // }
+      if (serviceDomain === "notify" && parameterName === "data") {
+        return factory.createIntersectionTypeNode([
+          factory.createTypeReferenceNode(
+            factory.createIdentifier("ActionableNotification"),
+            undefined,
+          ),
+          factory.createParenthesizedType(
+            factory.createUnionTypeNode([
+              factory.createTypeReferenceNode(
+                factory.createIdentifier("AndroidActionableNotification"),
+                undefined,
+              ),
+              factory.createTypeReferenceNode(
+                factory.createIdentifier("AppleActionableNotification"),
+                undefined,
+              ),
+            ]),
+          ),
+        ]);
+      }
       return factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
     }
 
@@ -69,7 +87,7 @@ export function FieldBuilder({ type_writer }: TServiceParams) {
     // else if (!is.undefined(selector?.))
     // : unknown
     else {
-      node = handleSelectors(serviceDomain, serviceName, {
+      node = handleSelectors(parameterName, serviceDomain, serviceName, {
         selector,
         ...details,
       });
