@@ -2,7 +2,7 @@
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
   "homepage": "https://docs.digital-alchemy.app/Type-Writer",
-  "version": "24.6.1",
+  "version": "24.6.2",
   "scripts": {
     "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
@@ -26,7 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "@digital-alchemy/core": "^24.6.1",
-    "@digital-alchemy/hass": "^24.6.4",
+    "@digital-alchemy/hass": "^24.6.5",
     "js-yaml": "^4.1.0",
     "quicktype": "^23.0.170",
     "quicktype-core": "^23.0.170",
