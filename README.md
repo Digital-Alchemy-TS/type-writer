@@ -1,17 +1,14 @@
-## 📝 Description
-
 Welcome to `@digital-alchemy/type-writer`!
 
-This application is a support tool for `@digital-alchemy/hass`, providing a detailed description of your setup for your editor to take advantage of. This is strictly a development tool, aimed at enhancing the editor experience.
-Get detailed information about services, which entities are available (or not), and more!
+This application acts a support application for [@digital-alchemy/hass](https://github.com/Digital-Alchemy-TS/hass), providing type definitions to assist during development
 
-This script should be run after updating dependencies, any time you alter your setup, right before you open your editor, or whenever you feel like it. Nobody is judging.
-
-- [Extended docs](https://docs.digital-alchemy.app)
+- [Project docs](https://docs.digital-alchemy.app)
 - [Discord](https://discord.gg/JkZ35Gv97Y)
 
 ![editor](./docs/editor.png)
+
 ## 🚀 Usage
+
 ```bash
 # install to devDependencies
 npm i --save-dev @digital-alchemy/type-writer
@@ -25,10 +22,12 @@ If you are running your code within a Home Assistant addon environment, `type-wr
 ## ⚙️ Configuration
 
 For setups outside an addon environment, a configuration file is needed. Create one of the following:
+
 - `.type_writer`: add to project root
 - `~/.config/type_writer`: add to user configs
 
 **Contents:**
+
 ```ini
 [hass]
   BASE_URL=http://localhost:8123

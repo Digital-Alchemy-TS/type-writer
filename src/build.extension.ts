@@ -66,7 +66,7 @@ export function BuildTypes({
       PICK_FROM_PLATFORM,
       ``,
       `// #MARK: ENTITY_SETUP`,
-      `export const ENTITY_SETUP = ${JSON.stringify(entitySetup, undefined, "  ")};`,
+      await type_writer.domain.build(),
       ``,
       `// #MARK: iCallService`,
       typeInterface,
