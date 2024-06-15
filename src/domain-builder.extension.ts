@@ -41,7 +41,7 @@ export function DomainBuilder({ hass, type_writer, logger }: TServiceParams) {
           ),
         ]),
         // & ExtraIntersectionData
-        factory.createTypeReferenceNode(factory.createIdentifier("TEntityCommon"), undefined),
+        // factory.createTypeReferenceNode(factory.createIdentifier("TEntityCommon"), undefined),
       ]),
     );
   }
@@ -51,6 +51,7 @@ export function DomainBuilder({ hass, type_writer, logger }: TServiceParams) {
     await each(hass.idBy.domain(domain), async entity_id => {
       const registry = hass.entity.registry.current.find(i => i.entity_id === entity_id);
       if (!is.empty(registry?.disabled_by)) {
+        logger.info({ name: entity_id }, `is disabled`);
         return;
       }
       parts.push(
@@ -76,7 +77,7 @@ export function DomainBuilder({ hass, type_writer, logger }: TServiceParams) {
   };
   return {
     async build() {
-      const full = hass.entity.listEntities().filter(entity_id => {
+      hass.entity.listEntities().filter(entity_id => {
         const found = hass.entity.registry.current.find(i => i.entity_id === entity_id);
         if (!found) {
           logger.debug({ name: entity_id }, `cannot find in registry, assuming not disabled`);

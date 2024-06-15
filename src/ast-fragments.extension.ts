@@ -1,4 +1,4 @@
-import { is, TServiceParams } from "@digital-alchemy/core";
+import { is } from "@digital-alchemy/core";
 import { PICK_ENTITY } from "@digital-alchemy/hass";
 import { dump } from "js-yaml";
 import {
@@ -9,14 +9,22 @@ import {
   TypeNode,
 } from "typescript";
 
-export function ASTFragmentsExtension({ type_writer }: TServiceParams) {
+export function ASTFragmentsExtension() {
   // #MARK: attributes
   function attributes<
     DATA extends object,
     KEYS extends Extract<keyof DATA, string> = Extract<keyof DATA, string>,
   >({ data, literal = [], override = {} }: AttributesBuilderOptions<DATA>): TypeLiteralNode {
     const keys = Object.keys(data) as KEYS[];
-    literal.push("friendly_name", "icon", "device_class", "unit_of_measurement", "state_class");
+    literal.push(
+      "friendly_name",
+      "icon",
+      "device_class",
+      "unit_of_measurement",
+      "state_class",
+      "device_id",
+      "zone_id",
+    );
     // * return final object
     return factory.createTypeLiteralNode(
       keys.map(key => {

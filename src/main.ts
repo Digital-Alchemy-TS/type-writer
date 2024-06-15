@@ -73,7 +73,7 @@ export const TYPE_WRITER = CreateApplication({
 setImmediate(async () => {
   await TYPE_WRITER.bootstrap({
     configuration: {
-      boilerplate: { LOG_LEVEL: "warn" },
+      boilerplate: { LOG_LEVEL: "debug" },
       hass: { AUTO_SCAN_CALL_PROXY: false },
     },
   });

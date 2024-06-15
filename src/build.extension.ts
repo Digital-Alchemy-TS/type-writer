@@ -62,7 +62,6 @@ export function BuildTypes({
       `  AndroidActionableNotification,`,
       `  AppleActionableNotification,`,
       `  PICK_ENTITY,`,
-      `  TEntityCommon,`,
       `} from "./helpers";`,
       ``,
       PICK_FROM_PLATFORM,
