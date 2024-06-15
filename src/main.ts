@@ -14,7 +14,10 @@ import {
   CoverBuilder,
   DateBuilder,
   DateTimeBuilder,
+  DeviceTrackerBuilder,
+  EventBuilder,
   FanBuilder,
+  GenericDomainBuilder,
   ImageBuilder,
   LawnMowerBuilder,
   LightBuilder,
@@ -35,6 +38,7 @@ import {
   VacuumBuilder,
   ValveBuilder,
   WaterHeaterBuilder,
+  WeatherBuilder,
 } from "./domains";
 import { HumidifierBuilder } from "./domains/humidifier.extension";
 import { EntityReference } from "./entity-reference.extension";
@@ -42,6 +46,7 @@ import { FieldBuilder } from "./field-builder.extension";
 import { ICallServiceExtension } from "./i-call-service.extension";
 import { Identifiers } from "./identifiers.extension";
 import { Printer } from "./printer.extension";
+import { QuickTypeExtension } from "./quicktype.extension";
 import { TSDoc } from "./tsdoc.extension";
 
 const DOMAINS = {
@@ -53,7 +58,10 @@ const DOMAINS = {
   cover: CoverBuilder,
   date: DateBuilder,
   datetime: DateTimeBuilder,
+  device_tracker: DeviceTrackerBuilder,
+  event: EventBuilder,
   fan: FanBuilder,
+  generic: GenericDomainBuilder,
   humidifier: HumidifierBuilder,
   image: ImageBuilder,
   lawn_mower: LawnMowerBuilder,
@@ -75,6 +83,7 @@ const DOMAINS = {
   vacuum: VacuumBuilder,
   valve: ValveBuilder,
   water_heater: WaterHeaterBuilder,
+  weather: WeatherBuilder,
 };
 
 export const TYPE_WRITER = CreateApplication({
@@ -97,6 +106,7 @@ export const TYPE_WRITER = CreateApplication({
     fields: FieldBuilder,
     identifiers: Identifiers,
     printer: Printer,
+    quicktype: QuickTypeExtension,
     tsdoc: TSDoc,
   },
 });

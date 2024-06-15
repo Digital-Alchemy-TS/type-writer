@@ -1,16 +1,16 @@
 import { TServiceParams } from "@digital-alchemy/core";
 import { factory, SyntaxKind } from "typescript";
 
-export function CameraBuilder({ type_writer }: TServiceParams) {
-  // @ts-expect-error ignore this
-  type_writer.domain.register<"camera">({
+export function DeviceTrackerBuilder({ type_writer }: TServiceParams) {
+  // @ts-expect-error ignore
+  type_writer.domain.register<"device_tracker">({
     async attributes(data) {
       return type_writer.ast.attributes({
         data: data.attributes,
-        literal: ["frontend_stream_type"],
+        literal: ["source_type"],
       });
     },
-    domain: "camera",
+    domain: "device_tracker",
     state() {
       return factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
     },

@@ -1,10 +1,10 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
 import { PICK_ENTITY } from "@digital-alchemy/hass";
+import { dump } from "js-yaml";
 import {
+  addSyntheticLeadingComment,
   factory,
-  PropertySignature,
   SyntaxKind,
-  TypeElement,
   TypeLiteralNode,
   TypeNode,
 } from "typescript";
@@ -14,40 +14,116 @@ export function ASTFragmentsExtension({ type_writer }: TServiceParams) {
   function attributes<
     DATA extends object,
     KEYS extends Extract<keyof DATA, string> = Extract<keyof DATA, string>,
-  >({ data, preserve = [], override = {} }: AttributesBuilderOptions<DATA>): TypeLiteralNode {
-    const elements = [] as TypeElement[];
+  >({ data, literal = [], override = {} }: AttributesBuilderOptions<DATA>): TypeLiteralNode {
     const keys = Object.keys(data) as KEYS[];
-    keys.forEach(key => {
-      if (is.function(override[key])) {
-        elements.push(override[key](data[key]));
-        return;
-      }
-      let typeNode: TypeNode;
-      switch (typeof data[key]) {
-        case "string": {
-          if (preserve.includes(key)) {
-            // typeNode =
-            break;
-          }
-          return;
-        }
-        case "number": {
-          return;
-        }
-        default: {
-          typeNode = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
-        }
-      }
-      elements.push(factory.createPropertySignature(undefined, key, undefined, typeNode));
-    });
-
+    literal.push("friendly_name", "icon", "device_class", "unit_of_measurement", "state_class");
     // * return final object
-    return factory.createTypeLiteralNode(elements);
+    return factory.createTypeLiteralNode(
+      keys.map(key => {
+        let node: TypeNode = override[key];
+        let showHelp = true;
+        if (is.undefined(node)) {
+          const value = data[key];
+          switch (typeof value) {
+            case "string": {
+              if (literal.includes(key)) {
+                node = factory.createLiteralTypeNode(
+                  factory.createStringLiteral(data[key] as string),
+                );
+                showHelp = false;
+              } else {
+                node = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
+              }
+              break;
+            }
+            case "number": {
+              node = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+              break;
+            }
+            case "boolean": {
+              showHelp = false;
+              node = factory.createKeywordTypeNode(SyntaxKind.BooleanKeyword);
+              break;
+            }
+            case "object": {
+              // eslint-disable-next-line unicorn/prefer-ternary
+              if (is.array(value)) {
+                showHelp = false;
+                // @ts-expect-error because it sucks at keeping track of types
+                node = buildArray(value as Array);
+              } else if (value === null) {
+                showHelp = false;
+                node = factory.createLiteralTypeNode(factory.createNull());
+              } else {
+                node = factory.createKeywordTypeNode(SyntaxKind.ObjectKeyword);
+              }
+              break;
+            }
+            default: {
+              node = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
+              // console.log({
+              //   key,
+              //   value: entity.attributes[key],
+              // });
+            }
+          }
+        }
+        const property = factory.createPropertySignature(undefined, `"${key}"`, undefined, node);
+        if (!showHelp) {
+          return property;
+        }
+        return addSyntheticLeadingComment(
+          property,
+          SyntaxKind.MultiLineCommentTrivia,
+          "*\n" +
+            [
+              "> ```yaml",
+              ...dump({ [key]: data[key] })
+                .trim()
+                .split("\n")
+                .map(i => `> ${i}`),
+            ]
+              .map(i => ` * ${i}`)
+              .join(`\n`) +
+            "\n * > ```\n ",
+        );
+      }),
+    );
   }
+
+  const buildArray = (data: unknown[]) => {
+    const isStringArray = !is.empty(data) && data.every(i => is.string(i));
+    if (isStringArray) {
+      return factory.createArrayTypeNode(
+        factory.createParenthesizedType(
+          factory.createUnionTypeNode(
+            data.map(option =>
+              factory.createLiteralTypeNode(factory.createStringLiteral(option as string)),
+            ),
+          ),
+        ),
+      );
+    }
+    return factory.createTupleTypeNode([]);
+  };
+  const tuple = (list: string[]) =>
+    factory.createTupleTypeNode(
+      list.map(i =>
+        factory.createNamedTupleMember(
+          undefined,
+          factory.createIdentifier(i),
+          undefined,
+          factory.createKeywordTypeNode(SyntaxKind.NumberKeyword),
+        ),
+      ),
+    );
+  const union = (list: string[]) =>
+    factory.createUnionTypeNode(
+      list.map(option => factory.createLiteralTypeNode(factory.createStringLiteral(option))),
+    );
 
   return {
     attributes,
-
     // #MARK: entity_id
     /**
      * "entity_id": "domain.object_id"
@@ -60,35 +136,13 @@ export function ASTFragmentsExtension({ type_writer }: TServiceParams) {
         factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
       ),
 
-    // #MARK: on_off
-    /**
-     * state: "on" | "off"
-     */
-    on_off: () => type_writer.ast.state_enum(["on", "off"]),
-
-    // #MARK: state_enum
-    /**
-     * Create a string union for state
-     */
-    state_enum: (options: string[]) =>
-      factory.createPropertySignature(
-        undefined,
-        factory.createIdentifier("state"),
-        undefined,
-        factory.createUnionTypeNode(
-          options.map(option => factory.createLiteralTypeNode(factory.createStringLiteral(option))),
-        ),
-      ),
+    tuple,
+    union,
   };
 }
 
-type AttributesBuilderOptions<
-  DATA extends object,
-  KEYS extends Extract<keyof DATA, string> = Extract<keyof DATA, string>,
-> = {
+type AttributesBuilderOptions<DATA extends object> = {
   data: DATA;
-  preserve?: KEYS[];
-  override?: Partial<{
-    [KEY in KEYS]: (value: DATA[KEY]) => PropertySignature;
-  }>;
+  literal?: string[];
+  override?: Record<string, TypeNode>;
 };
