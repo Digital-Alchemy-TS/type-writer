@@ -10,40 +10,34 @@ export function DomainBuilder({ hass, type_writer, logger }: TServiceParams) {
 
     // @ts-expect-error no cares given
     const builder = DOMAIN_BUILDERS[domain(entity_id)] || DOMAIN_BUILDERS.generic;
-    return factory.createParenthesizedType(
-      factory.createIntersectionTypeNode([
-        // { state, entity_id, attributes }
-        factory.createTypeLiteralNode([
-          // * state
-          factory.createPropertySignature(
-            undefined,
-            factory.createIdentifier("state"),
-            undefined,
-            builder.state
-              ? builder.state(entity)
-              : factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
-          ),
-          // * entity_id
-          factory.createPropertySignature(
-            undefined,
-            factory.createIdentifier("entity_id"),
-            undefined,
-            factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
-          ),
-          // * attributes
-          factory.createPropertySignature(
-            undefined,
-            factory.createIdentifier("attributes"),
-            undefined,
-            builder.attributes
-              ? await builder.attributes(entity)
-              : factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
-          ),
-        ]),
-        // & ExtraIntersectionData
-        // factory.createTypeReferenceNode(factory.createIdentifier("TEntityCommon"), undefined),
-      ]),
-    );
+    // { state, entity_id, attributes }
+    return factory.createTypeLiteralNode([
+      // * state
+      factory.createPropertySignature(
+        undefined,
+        factory.createIdentifier("state"),
+        undefined,
+        builder.state
+          ? builder.state(entity)
+          : factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
+      ),
+      // * entity_id
+      factory.createPropertySignature(
+        undefined,
+        factory.createIdentifier("entity_id"),
+        undefined,
+        factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
+      ),
+      // * attributes
+      factory.createPropertySignature(
+        undefined,
+        factory.createIdentifier("attributes"),
+        undefined,
+        builder.attributes
+          ? await builder.attributes(entity)
+          : factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
+      ),
+    ]);
   }
 
   async function buildEntityDomain(domain: ALL_DOMAINS) {

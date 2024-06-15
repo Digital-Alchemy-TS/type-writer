@@ -1,4 +1,4 @@
-import { START, TServiceParams } from "@digital-alchemy/core";
+import { START } from "@digital-alchemy/core";
 import { exit } from "process";
 import {
   InputData,
@@ -15,7 +15,7 @@ import ts, {
   TypeNode,
 } from "typescript";
 
-export function QuickTypeExtension({ hass }: TServiceParams) {
+export function QuickTypeExtension() {
   function convertToAst(tsCode: string) {
     const sourceFile = createSourceFile(
       "in-memory.ts",
