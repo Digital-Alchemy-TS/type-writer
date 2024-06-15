@@ -3,15 +3,13 @@ import { ALL_DOMAINS, ANY_ENTITY, domain, ENTITY_STATE } from "@digital-alchemy/
 import { factory, SyntaxKind, TypeElement, TypeNode } from "typescript";
 
 export function DomainBuilder({ hass, type_writer, logger }: TServiceParams) {
-  const object_id = (entity: ANY_ENTITY) => entity.split(".").pop();
-
-  async function buildEntitySignature(entity_id: ANY_ENTITY) {
+  async function buildEntityDomain(entity_id: ANY_ENTITY) {
     const entity = hass.entity.raw(entity_id);
 
     // @ts-expect-error no cares given
     const builder = DOMAIN_BUILDERS[domain(entity_id)] || DOMAIN_BUILDERS.generic;
     // { state, entity_id, attributes }
-    return factory.createTypeLiteralNode([
+    const node = factory.createTypeLiteralNode([
       // * state
       factory.createPropertySignature(
         undefined,
@@ -38,31 +36,12 @@ export function DomainBuilder({ hass, type_writer, logger }: TServiceParams) {
           : factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
       ),
     ]);
-  }
-
-  async function buildEntityDomain(domain: ALL_DOMAINS) {
-    const parts = [] as TypeElement[];
-    await each(hass.idBy.domain(domain), async entity_id => {
-      const registry = hass.entity.registry.current.find(i => i.entity_id === entity_id);
-      if (!is.empty(registry?.disabled_by)) {
-        logger.info({ name: entity_id }, `is disabled`);
-        return;
-      }
-      parts.push(
-        factory.createPropertySignature(
-          undefined,
-          factory.createIdentifier(`"${object_id(entity_id)}"`),
-          undefined,
-          await buildEntitySignature(entity_id),
-        ),
-      );
-    });
 
     return factory.createPropertySignature(
       undefined,
-      factory.createIdentifier(`"${domain}"`),
+      factory.createIdentifier(`"${entity_id}"`),
       undefined,
-      factory.createTypeLiteralNode(parts),
+      node,
     );
   }
 
@@ -79,9 +58,9 @@ export function DomainBuilder({ hass, type_writer, logger }: TServiceParams) {
         }
         return is.empty(found?.disabled_by);
       });
-      const domains = is.unique(hass.entity.listEntities().map(i => domain(i)));
+      const entities = hass.entity.listEntities();
       const out = [] as TypeElement[];
-      await each(domains, async domain => out.push(await buildEntityDomain(domain)));
+      await each(entities, async domain => out.push(await buildEntityDomain(domain)));
       return type_writer.printer("ENTITY_SETUP", factory.createTypeLiteralNode(out));
     },
     register<DOMAIN extends ALL_DOMAINS>(options: DomainBuilderOptions<DOMAIN>) {
