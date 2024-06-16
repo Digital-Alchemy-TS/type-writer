@@ -78,7 +78,7 @@ export function EntityReference({ logger, type_writer }: TServiceParams) {
   function buildEntityReference(selector: ServiceListSelector) {
     const entity = selector.entity;
     return buildTargetReference({
-      domain: is.empty(entity?.domain) ? [] : [entity.domain],
+      domain: is.empty(entity?.domain) ? [] : [entity.domain].flat(),
       platform: entity?.integration,
     });
   }
