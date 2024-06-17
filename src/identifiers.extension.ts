@@ -147,6 +147,33 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
         ),
       );
     },
+    uniqueId() {
+      return type_writer.printer(
+        "TUniqueID",
+        factory.createUnionTypeNode(
+          hass.entity.registry.current
+            .filter(i => !is.empty(i.entity_id) && !is.empty(i.unique_id))
+            .map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i.unique_id))),
+        ),
+      );
+    },
+    uniqueIdMapping() {
+      return type_writer.printer(
+        "TUniqueIDMapping",
+        factory.createTypeLiteralNode(
+          hass.entity.registry.current
+            .filter(i => !is.empty(i.entity_id) && !is.empty(i.unique_id))
+            .map(item =>
+              factory.createPropertySignature(
+                undefined,
+                factory.createStringLiteral(item.entity_id),
+                undefined,
+                factory.createLiteralTypeNode(factory.createStringLiteral(item.unique_id)),
+              ),
+            ),
+        ),
+      );
+    },
     zone() {
       return type_writer.printer(
         "TZoneId",
