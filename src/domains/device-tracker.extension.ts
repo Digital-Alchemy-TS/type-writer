@@ -1,11 +1,11 @@
 import { TServiceParams } from "@digital-alchemy/core";
 import { factory, SyntaxKind } from "typescript";
 
-export function DeviceTrackerBuilder({ type_writer }: TServiceParams) {
+export function DeviceTrackerBuilder({ type_build }: TServiceParams) {
   // @ts-expect-error ignore
-  type_writer.domain.register<"device_tracker">({
+  type_build.domain.register<"device_tracker">({
     async attributes(data) {
-      return type_writer.ast.attributes({
+      return type_build.ast.attributes({
         data: data.attributes,
         literal: ["source_type"],
       });

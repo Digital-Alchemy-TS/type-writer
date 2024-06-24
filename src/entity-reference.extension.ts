@@ -15,7 +15,7 @@ type TargetReference = {
   platform?: TPlatformId;
 };
 
-export function EntityReference({ logger, type_writer }: TServiceParams) {
+export function EntityReference({ logger, type_build }: TServiceParams) {
   function buildTargetReference(data: TargetReference) {
     if (!is.empty(data.platform)) {
       if (!is.empty(data.domain)) {
@@ -131,7 +131,7 @@ export function EntityReference({ logger, type_writer }: TServiceParams) {
   }
 
   function buildEntitySetup() {
-    return type_writer.printer("ENTITY_SETUP", undefined);
+    return type_build.printer("ENTITY_SETUP", undefined);
   }
 
   return { buildEntityReference, buildEntitySetup, createTarget };

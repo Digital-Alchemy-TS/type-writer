@@ -1,11 +1,11 @@
 import { TServiceParams } from "@digital-alchemy/core";
 import { factory, SyntaxKind } from "typescript";
 
-export function WeatherBuilder({ type_writer }: TServiceParams) {
+export function WeatherBuilder({ type_build }: TServiceParams) {
   // @ts-expect-error ignore this
-  type_writer.domain.register<"weather">({
+  type_build.domain.register<"weather">({
     async attributes(data) {
-      return type_writer.ast.attributes({
+      return type_build.ast.attributes({
         data: data.attributes,
         literal: [
           "temperature_unit",

@@ -1,15 +1,15 @@
 import { TServiceParams } from "@digital-alchemy/core";
 import { factory, SyntaxKind } from "typescript";
 
-export function EventBuilder({ type_writer }: TServiceParams) {
+export function EventBuilder({ type_build }: TServiceParams) {
   // @ts-expect-error ignore
-  type_writer.domain.register<"event">({
+  type_build.domain.register<"event">({
     async attributes(data) {
       const attributes = data.attributes as object as { event_types: string[] };
-      return type_writer.ast.attributes({
+      return type_build.ast.attributes({
         data: data.attributes,
         override: {
-          event_type: type_writer.ast.union(attributes.event_types ?? []),
+          event_type: type_build.ast.union(attributes.event_types ?? []),
         },
       });
     },

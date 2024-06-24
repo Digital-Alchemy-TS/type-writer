@@ -2,7 +2,7 @@ import { is, TServiceParams } from "@digital-alchemy/core";
 import { ServiceListFieldDescription } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeNode } from "typescript";
 
-export function FieldBuilder({ type_writer }: TServiceParams) {
+export function FieldBuilder({ type_build }: TServiceParams) {
   // #MARK: handleSelectors
   function handleSelectors(
     parameterName: string,
@@ -72,7 +72,7 @@ export function FieldBuilder({ type_writer }: TServiceParams) {
     // string | `domain.${keyof typeof ENTITY_SETUP.domain}`
     else if (!is.undefined(selector?.entity))
       // some combination of: PICK_ENTITY | PICK_ENTITY[] | PICK_ENTITY<"domain"> | PICK_ENTITY<"domain">[]
-      node = type_writer.entity.buildEntityReference(selector);
+      node = type_build.entity.buildEntityReference(selector);
     // : "option" | "option" | "option" | "option"
     else if (!is.undefined(selector?.select))
       node = factory.createUnionTypeNode(
@@ -93,7 +93,7 @@ export function FieldBuilder({ type_writer }: TServiceParams) {
       });
     }
 
-    return type_writer.tsdoc.parameterComment(
+    return type_build.tsdoc.parameterComment(
       factory.createPropertySignature(
         undefined,
         factory.createIdentifier(parameterName),

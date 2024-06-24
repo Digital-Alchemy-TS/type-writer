@@ -3,27 +3,27 @@ import { ENTITY_STATE, PICK_ENTITY } from "@digital-alchemy/hass";
 import { factory, SyntaxKind } from "typescript";
 import { isNumeric } from "validator";
 
-export function LightBuilder({ type_writer }: TServiceParams) {
-  type_writer.domain.register<"light">({
+export function LightBuilder({ type_build }: TServiceParams) {
+  type_build.domain.register<"light">({
     async attributes(data) {
       const attributes = data.attributes as object as Record<
         "supported_color_modes" | "effect_list",
         string[]
       >;
 
-      return type_writer.ast.attributes({
+      return type_build.ast.attributes({
         data: data.attributes,
         override: {
           brightness: factory.createKeywordTypeNode(SyntaxKind.NumberKeyword),
-          color_mode: type_writer.ast.union(attributes.supported_color_modes ?? []),
+          color_mode: type_build.ast.union(attributes.supported_color_modes ?? []),
           color_temp: factory.createKeywordTypeNode(SyntaxKind.NumberKeyword),
           color_temp_kelvin: factory.createKeywordTypeNode(SyntaxKind.NumberKeyword),
-          effect: type_writer.ast.union(attributes.effect_list ?? []),
-          hs_color: type_writer.ast.tuple([..."hs"]),
-          rgb_color: type_writer.ast.tuple([..."rgb"]),
-          rgbw_color: type_writer.ast.tuple([..."rgbw"]),
-          rgbww_color: type_writer.ast.tuple([..."rgbww"]),
-          xy_color: type_writer.ast.tuple([..."xy"]),
+          effect: type_build.ast.union(attributes.effect_list ?? []),
+          hs_color: type_build.ast.tuple([..."hs"]),
+          rgb_color: type_build.ast.tuple([..."rgb"]),
+          rgbw_color: type_build.ast.tuple([..."rgbw"]),
+          rgbww_color: type_build.ast.tuple([..."rgbww"]),
+          xy_color: type_build.ast.tuple([..."xy"]),
         },
       });
     },

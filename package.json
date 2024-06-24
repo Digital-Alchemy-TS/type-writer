@@ -2,7 +2,7 @@
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
   "homepage": "https://docs.digital-alchemy.app/Type-Writer",
-  "version": "24.06.5",
+  "version": "24.6.6",
   "scripts": {
     "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
@@ -14,14 +14,15 @@
     "url": "https://github.com/zoe-codez",
     "name": "Zoe Codez"
   },
-  "bin": {
-    "type-writer": "./dist/main.js"
-  },
+  "bin": "./dist/main.js",
   "files": [
     "dist/**/*"
   ],
   "engines": {
     "node": ">=20"
+  },
+  "exports": {
+    ".": "./dist/index.js"
   },
   "license": "MIT",
   "dependencies": {
@@ -35,9 +36,9 @@
     "@digital-alchemy/hass": "*"
   },
   "devDependencies": {
-    "@digital-alchemy/core": "^24.6.1",
-    "@digital-alchemy/hass": "^24.6.5",
     "@cspell/eslint-plugin": "^8.7.0",
+    "@digital-alchemy/core": "^24.6.4",
+    "@digital-alchemy/hass": "^24.6.9",
     "@types/figlet": "^1.5.8",
     "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.9",
@@ -67,5 +68,6 @@
     "tsx": "^4.7.2",
     "type-fest": "^4.15.0",
     "typescript": "^5.4.5"
-  }
+  },
+  "packageManager": "yarn@4.3.1"
 }

@@ -1,11 +1,11 @@
 import { TServiceParams } from "@digital-alchemy/core";
 import { factory } from "typescript";
 
-export function UpdateBuilder({ type_writer }: TServiceParams) {
+export function UpdateBuilder({ type_build }: TServiceParams) {
   // @ts-expect-error ignore
-  type_writer.domain.register<"update">({
+  type_build.domain.register<"update">({
     async attributes(data) {
-      return type_writer.ast.attributes({
+      return type_build.ast.attributes({
         data: data.attributes,
         literal: ["installed_version", "latest_version", "title"],
       });
