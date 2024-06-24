@@ -2,12 +2,15 @@
 import { CreateApplication } from "@digital-alchemy/core";
 import { LIB_HASS } from "@digital-alchemy/hass";
 
+import { Runner } from "./runner.extension";
 import { TYPE_BUILD } from "./type-writer.module";
 
 const TYPE_WRITER = CreateApplication({
   libraries: [LIB_HASS, TYPE_BUILD],
   name: "type_writer",
-  services: {},
+  services: {
+    runner: Runner,
+  },
 });
 setImmediate(async () => {
   await TYPE_WRITER.bootstrap({
