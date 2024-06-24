@@ -7,8 +7,8 @@
     "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
     "test": "./scripts/test.sh",
-    "prepublishOnly": "npm run build",
-    "upgrade": "ncu -u -f '@digital-alchemy/*'; npm i"
+    "prepublishOnly": "yarn build",
+    "upgrade": "ncu -u -f '@digital-alchemy/*'; yarn"
   },
   "author": {
     "url": "https://github.com/zoe-codez",
