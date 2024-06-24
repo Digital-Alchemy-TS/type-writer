@@ -1,11 +1,11 @@
 import { TServiceParams } from "@digital-alchemy/core";
 import { factory, SyntaxKind } from "typescript";
 
-export function NumberBuilder({ type_writer }: TServiceParams) {
+export function NumberBuilder({ type_build }: TServiceParams) {
   // @ts-expect-error ignore this
-  type_writer.domain.register<"number">({
+  type_build.domain.register<"number">({
     async attributes(data) {
-      return type_writer.ast.attributes({
+      return type_build.ast.attributes({
         data: data.attributes,
         literal: ["mode"],
       });

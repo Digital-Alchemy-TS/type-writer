@@ -2,7 +2,7 @@ import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
 import { HassServiceDTO, ServiceListField, ServiceListServiceTarget } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeElement } from "typescript";
 
-export async function ICallServiceExtension({ hass, type_writer }: TServiceParams) {
+export async function ICallServiceExtension({ hass, type_build }: TServiceParams) {
   return async function () {
     const domains = await hass.fetch.listServices();
     const sortedDomains = domains.sort((a, b) => (a.domain > b.domain ? UP : DOWN));
@@ -32,9 +32,9 @@ export async function ICallServiceExtension({ hass, type_writer }: TServiceParam
               ...Object.entries(value.fields)
                 .sort(([a], [b]) => (a > b ? UP : DOWN))
                 .map(([service, details]) =>
-                  type_writer.fields.fieldPropertySignature(service, details, domain, key),
+                  type_build.fields.fieldPropertySignature(service, details, domain, key),
                 ),
-              type_writer.entity.createTarget(value.target as ServiceListServiceTarget),
+              type_build.entity.createTarget(value.target as ServiceListServiceTarget),
             ].filter(i => !is.undefined(i)) as TypeElement[],
           ),
         ),
@@ -49,7 +49,7 @@ export async function ICallServiceExtension({ hass, type_writer }: TServiceParam
       // >     [service_name]: (service_data) => Promise<void | unknown>
       // >   }
       // > }
-      return type_writer.tsdoc.serviceComment(
+      return type_build.tsdoc.serviceComment(
         factory.createMethodSignature(
           undefined,
           factory.createIdentifier(key),
@@ -75,7 +75,7 @@ export async function ICallServiceExtension({ hass, type_writer }: TServiceParam
       // > }
 
       const sortedServices = Object.entries(services).sort(([a], [b]) => (a > b ? UP : DOWN));
-      return type_writer.tsdoc.domainMarker(
+      return type_build.tsdoc.domainMarker(
         factory.createPropertySignature(
           undefined,
           factory.createIdentifier(domain),
@@ -95,7 +95,7 @@ export async function ICallServiceExtension({ hass, type_writer }: TServiceParam
     // >     [service_name]: (service_data) => Promise<void | unknown>
     // >   }
     // > }
-    return type_writer.printer(
+    return type_build.printer(
       "iCallService",
       factory.createTypeLiteralNode(sortedDomains.map(domain => buildDomain(domain))),
     );

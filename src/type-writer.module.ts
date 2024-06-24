@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { CreateApplication, CreateLibrary } from "@digital-alchemy/core";
+import { CreateLibrary } from "@digital-alchemy/core";
 import { LIB_HASS } from "@digital-alchemy/hass";
 
 import { ASTFragmentsExtension } from "./ast-fragments.extension";
@@ -46,7 +46,7 @@ const DOMAINS = {
   weather: WeatherBuilder,
 };
 
-export const TYPE_WRITER = CreateLibrary({
+export const TYPE_BUILD = CreateLibrary({
   configuration: {
     TARGET_FILE: {
       description: "Define a file to write types to. Autodetect = default behavior",
@@ -54,7 +54,7 @@ export const TYPE_WRITER = CreateLibrary({
     },
   },
   depends: [LIB_HASS],
-  name: "type_writer",
+  name: "type_build",
   priorityInit: ["domain"],
   services: {
     ...DOMAINS,
@@ -73,6 +73,6 @@ export const TYPE_WRITER = CreateLibrary({
 
 declare module "@digital-alchemy/core" {
   export interface LoadedModules {
-    type_writer: typeof TYPE_WRITER;
+    type_build: typeof TYPE_BUILD;
   }
 }

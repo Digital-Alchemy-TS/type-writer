@@ -8,7 +8,7 @@ const PICK_FROM_PLATFORM = `type PICK_FROM_PLATFORM<
   DOMAIN extends TRawDomains = TRawDomains,
 > = Extract<REGISTRY_SETUP["platform"][\`_\${ID}\`], PICK_ENTITY<DOMAIN>>;`;
 
-export function BuildTypes({ logger, hass, type_writer, config, internal }: TServiceParams) {
+export function BuildTypes({ logger, hass, type_build, config, internal }: TServiceParams) {
   async function runner() {
     try {
       // install location
@@ -17,11 +17,11 @@ export function BuildTypes({ logger, hass, type_writer, config, internal }: TSer
       // relative target file
       // ../../hass/dist/dynamic.d.ts
       //
-      const path = is.empty(config.type_writer.TARGET_FILE)
+      const path = is.empty(config.type_build.TARGET_FILE)
         ? join(__dirname, "..", "..", "hass", "dist", "dynamic.d.ts")
-        : config.type_writer.TARGET_FILE;
+        : config.type_build.TARGET_FILE;
       if (!existsSync(path)) {
-        if (config.type_writer.TARGET_FILE !== path) {
+        if (config.type_build.TARGET_FILE !== path) {
           // Represents an error with the script
           // Calculated the wrong path, and something is up
           logger.fatal({ path }, `cannot locate target file, aborting`);
@@ -47,9 +47,9 @@ export function BuildTypes({ logger, hass, type_writer, config, internal }: TSer
 
     try {
       logger.debug("building [ENTITY_SETUP]");
-      const ENTITY_SETUP = await type_writer.domain.build();
+      const ENTITY_SETUP = await type_build.domain.build();
       logger.debug("building [iCallService]");
-      const typeInterface = await type_writer.call_service();
+      const typeInterface = await type_build.call_service();
 
       return [
         `// This file is generated, and is automatically updated as a npm post install step`,
@@ -70,37 +70,37 @@ export function BuildTypes({ logger, hass, type_writer, config, internal }: TSer
         typeInterface,
         ``,
         `// #MARK: REGISTRY_SETUP`,
-        type_writer.identifiers.RegistryDetails(),
+        type_build.identifiers.RegistryDetails(),
         ``,
         `// #MARK: TAreaId`,
-        type_writer.identifiers.area(),
+        type_build.identifiers.area(),
         ``,
         `// #MARK: TDeviceId`,
-        type_writer.identifiers.device(),
+        type_build.identifiers.device(),
         ``,
         `// #MARK: TFloorId`,
-        type_writer.identifiers.floor(),
+        type_build.identifiers.floor(),
         ``,
         `// #MARK: TLabelId`,
-        type_writer.identifiers.label(),
+        type_build.identifiers.label(),
         ``,
         `// #MARK: TZoneId`,
-        type_writer.identifiers.zone(),
+        type_build.identifiers.zone(),
         ``,
         `// #MARK: TUniqueIDMapping`,
-        type_writer.identifiers.uniqueIdMapping(),
+        type_build.identifiers.uniqueIdMapping(),
         ``,
         `// #MARK: TUniqueID`,
-        type_writer.identifiers.uniqueId(),
+        type_build.identifiers.uniqueId(),
         ``,
         `// #MARK: TRawEntityIds`,
-        type_writer.identifiers.entityIds(entities),
+        type_build.identifiers.entityIds(entities),
         ``,
         `// #MARK: TPlatformId`,
-        type_writer.identifiers.platforms(),
+        type_build.identifiers.platforms(),
         ``,
         `// #MARK: TRawDomains`,
-        type_writer.identifiers.domains(entities),
+        type_build.identifiers.domains(entities),
       ].join(`\n`);
     } catch (error) {
       logger.error({ error }, "failed to build data, please report");

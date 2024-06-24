@@ -3,7 +3,7 @@ import { is, TServiceParams } from "@digital-alchemy/core";
 import { domain, ENTITY_STATE, PICK_ENTITY } from "@digital-alchemy/hass";
 import { factory, PropertySignature, SyntaxKind } from "typescript";
 
-export function Identifiers({ hass, type_writer }: TServiceParams) {
+export function Identifiers({ hass, type_build }: TServiceParams) {
   function RegistryType(type: string, value: PropertySignature[]) {
     return factory.createPropertySignature(
       undefined,
@@ -36,7 +36,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
   }
 
   function RegistryDetails() {
-    return type_writer.printer(
+    return type_build.printer(
       "REGISTRY_SETUP",
       factory.createTypeLiteralNode([
         RegistryType(
@@ -74,7 +74,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
   return {
     RegistryDetails,
     area() {
-      return type_writer.printer(
+      return type_build.printer(
         "TAreaId",
         is.empty(hass.area.current)
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
@@ -86,7 +86,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       );
     },
     device() {
-      return type_writer.printer(
+      return type_build.printer(
         "TDeviceId",
         is.empty(hass.device.current)
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
@@ -98,7 +98,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       );
     },
     domains(list: ENTITY_STATE<PICK_ENTITY>[]) {
-      return type_writer.printer(
+      return type_build.printer(
         "TRawDomains",
         factory.createUnionTypeNode(
           is
@@ -108,7 +108,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       );
     },
     entityIds(list: ENTITY_STATE<PICK_ENTITY>[]) {
-      return type_writer.printer(
+      return type_build.printer(
         "TRawEntityIds",
         factory.createUnionTypeNode(
           list.map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i.entity_id))),
@@ -116,7 +116,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       );
     },
     floor() {
-      return type_writer.printer(
+      return type_build.printer(
         "TFloorId",
         is.empty(hass.floor.current)
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
@@ -128,7 +128,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       );
     },
     label() {
-      return type_writer.printer(
+      return type_build.printer(
         "TLabelId",
         is.empty(hass.label.current)
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
@@ -140,7 +140,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       );
     },
     platforms() {
-      return type_writer.printer(
+      return type_build.printer(
         "TPlatformId",
         factory.createUnionTypeNode(
           uniquePlatforms().map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i))),
@@ -148,7 +148,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       );
     },
     uniqueId() {
-      return type_writer.printer(
+      return type_build.printer(
         "TUniqueID",
         factory.createUnionTypeNode(
           hass.entity.registry.current
@@ -158,7 +158,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       );
     },
     uniqueIdMapping() {
-      return type_writer.printer(
+      return type_build.printer(
         "TUniqueIDMapping",
         factory.createTypeLiteralNode(
           hass.entity.registry.current
@@ -175,7 +175,7 @@ export function Identifiers({ hass, type_writer }: TServiceParams) {
       );
     },
     zone() {
-      return type_writer.printer(
+      return type_build.printer(
         "TZoneId",
         is.empty(hass.zone.current)
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)

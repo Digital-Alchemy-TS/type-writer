@@ -2,7 +2,7 @@ import { each, is, TServiceParams } from "@digital-alchemy/core";
 import { ALL_DOMAINS, ANY_ENTITY, domain, ENTITY_STATE } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeElement, TypeNode } from "typescript";
 
-export function DomainBuilder({ hass, type_writer, logger }: TServiceParams) {
+export function DomainBuilder({ hass, type_build, logger }: TServiceParams) {
   async function buildEntityDomain(entity_id: ANY_ENTITY) {
     const entity = hass.entity.raw(entity_id);
 
@@ -61,7 +61,7 @@ export function DomainBuilder({ hass, type_writer, logger }: TServiceParams) {
       const entities = hass.entity.listEntities();
       const out = [] as TypeElement[];
       await each(entities, async domain => out.push(await buildEntityDomain(domain)));
-      return type_writer.printer("ENTITY_SETUP", factory.createTypeLiteralNode(out));
+      return type_build.printer("ENTITY_SETUP", factory.createTypeLiteralNode(out));
     },
     register<DOMAIN extends ALL_DOMAINS>(options: DomainBuilderOptions<DOMAIN>) {
       const domain = options.domain;

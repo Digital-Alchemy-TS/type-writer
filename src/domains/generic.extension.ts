@@ -3,10 +3,10 @@ import { ANY_ENTITY, ENTITY_STATE } from "@digital-alchemy/hass";
 import { factory, SyntaxKind } from "typescript";
 import { isNumeric } from "validator";
 
-export function GenericDomainBuilder({ type_writer }: TServiceParams) {
-  type_writer.domain.register({
+export function GenericDomainBuilder({ type_build }: TServiceParams) {
+  type_build.domain.register({
     async attributes(data) {
-      return type_writer.ast.attributes({
+      return type_build.ast.attributes({
         data: data.attributes,
       });
     },
