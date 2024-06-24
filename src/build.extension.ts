@@ -8,16 +8,8 @@ const PICK_FROM_PLATFORM = `type PICK_FROM_PLATFORM<
   DOMAIN extends TRawDomains = TRawDomains,
 > = Extract<REGISTRY_SETUP["platform"][\`_\${ID}\`], PICK_ENTITY<DOMAIN>>;`;
 
-export function BuildTypes({
-  logger,
-  lifecycle,
-  hass,
-  type_writer,
-  config,
-  internal,
-}: TServiceParams) {
-  // ? join(__dirname, "..", "home-assistant", "src", "dynamic.d.ts")
-  lifecycle.onReady(async () => {
+export function BuildTypes({ logger, hass, type_writer, config, internal }: TServiceParams) {
+  async function runner() {
     try {
       // install location
       // node_modules/@digital-alchemy/type-writer/dist/index.js
@@ -43,11 +35,8 @@ export function BuildTypes({
       logger.info(`{reload your editor to update types}`);
     } catch (error) {
       logger.fatal({ error }, `failed to write type definitions file`);
-    } finally {
-      // bypass shutdown messages, just halt
-      setImmediate(() => exit());
     }
-  });
+  }
 
   // see file - libs/home-assistant/src/dynamic.ts
   async function DoBuild() {
@@ -118,4 +107,5 @@ export function BuildTypes({
       exit();
     }
   }
+  return runner;
 }
