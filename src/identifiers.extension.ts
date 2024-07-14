@@ -155,8 +155,12 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
             .filter(
               i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)),
             )
-            .map(i =>
-              factory.createLiteralTypeNode(factory.createStringLiteral(String(i.unique_id))),
+            .map(item =>
+              factory.createLiteralTypeNode(
+                is.number(item.unique_id)
+                  ? factory.createNumericLiteral(item.unique_id)
+                  : factory.createStringLiteral(item.unique_id),
+              ),
             ),
         ),
       );
@@ -174,7 +178,11 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
                 undefined,
                 factory.createStringLiteral(item.entity_id),
                 undefined,
-                factory.createLiteralTypeNode(factory.createStringLiteral(String(item.unique_id))),
+                factory.createLiteralTypeNode(
+                  is.number(item.unique_id)
+                    ? factory.createNumericLiteral(item.unique_id)
+                    : factory.createStringLiteral(item.unique_id),
+                ),
               ),
             ),
         ),
