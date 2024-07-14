@@ -42,30 +42,30 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
         RegistryType(
           "area",
           hass.area.current.map(({ area_id }) =>
-            ItemObject(`_${area_id}`, hass.entity.byArea(area_id)),
+            ItemObject(`_${area_id}`, hass.idBy.area(area_id)),
           ),
         ),
         RegistryType(
           "platform",
           uniquePlatforms().map(platform =>
-            ItemObject(`_${platform}`, hass.entity.byPlatform(platform)),
+            ItemObject(`_${platform}`, hass.idBy.platform(platform)),
           ),
         ),
         RegistryType(
           "label",
           hass.label.current.map(({ label_id }) =>
-            ItemObject(`_${label_id}`, hass.entity.byLabel(label_id)),
+            ItemObject(`_${label_id}`, hass.idBy.label(label_id)),
           ),
         ),
         RegistryType(
           "floor",
           hass.floor.current.map(({ floor_id }) =>
-            ItemObject(`_${floor_id}`, hass.entity.byFloor(floor_id)),
+            ItemObject(`_${floor_id}`, hass.idBy.floor(floor_id)),
           ),
         ),
         RegistryType(
           "device",
-          hass.device.current.map(({ id }) => ItemObject(`_${id}`, hass.entity.byDevice(id))),
+          hass.device.current.map(({ id }) => ItemObject(`_${id}`, hass.idBy.device(id))),
         ),
       ]),
     );
