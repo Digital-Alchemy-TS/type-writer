@@ -170,7 +170,7 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
                 undefined,
                 factory.createStringLiteral(item.entity_id),
                 undefined,
-                factory.createLiteralTypeNode(factory.createStringLiteral(item.unique_id)),
+                factory.createLiteralTypeNode(factory.createStringLiteral(String(item.unique_id))),
               ),
             ),
         ),
