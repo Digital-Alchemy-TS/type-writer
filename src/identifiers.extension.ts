@@ -158,7 +158,7 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
             .map(item =>
               factory.createLiteralTypeNode(
                 is.number(item.unique_id)
-                  ? factory.createNumericLiteral(item.unique_id)
+                  ? factory.createNumericLiteral(String(item.unique_id))
                   : factory.createStringLiteral(item.unique_id),
               ),
             ),
@@ -180,7 +180,7 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
                 undefined,
                 factory.createLiteralTypeNode(
                   is.number(item.unique_id)
-                    ? factory.createNumericLiteral(item.unique_id)
+                    ? factory.createNumericLiteral(String(item.unique_id))
                     : factory.createStringLiteral(item.unique_id),
                 ),
               ),
