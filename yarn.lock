@@ -937,9 +937,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@digital-alchemy/core@npm:^24.6.4":
-  version: 24.6.4
-  resolution: "@digital-alchemy/core@npm:24.6.4"
+"@digital-alchemy/core@npm:^24.7.1":
+  version: 24.7.1
+  resolution: "@digital-alchemy/core@npm:24.7.1"
   dependencies:
     chalk: "npm:^5.3.0"
     dayjs: "npm:^1.11.11"
@@ -954,13 +954,13 @@ __metadata:
   dependenciesMeta:
     redis:
       optional: true
-  checksum: 10/7a73da6e62d29bac9ee2921bb1e324516a295e0a1f6b7230d082a2429a74dc609b088002c583aa0dec85cd7e59d00c5e0bfa3570ed05dc63d56eb71e439d3f2f
+  checksum: 10/fd5dbdb47890c26348951a4ace7b4496b943d3271a2a50430a3456c2abf25de50192dd4e26e8d93279e040f13ba366f86d75686efadcc750d20dbaf1051189a6
   languageName: node
   linkType: hard
 
-"@digital-alchemy/hass@npm:^24.6.9":
-  version: 24.6.9
-  resolution: "@digital-alchemy/hass@npm:24.6.9"
+"@digital-alchemy/hass@npm:^24.7.4":
+  version: 24.7.4
+  resolution: "@digital-alchemy/hass@npm:24.7.4"
   dependencies:
     dayjs: "npm:^1.11.11"
     prom-client: "npm:^15.1.2"
@@ -970,7 +970,7 @@ __metadata:
     "@digital-alchemy/core": "*"
   bin:
     mock-assistant: dist/mock_assistant/main.js
-  checksum: 10/f314cf9448a07d6e935ebfb43198ac926aaa73778fb6e32ff89474fb52cdcbb68daa5c1352384eecce8ea4946c858471ba7d62a3bcac59e1c12849fcc762eb6c
+  checksum: 10/cd67f875b2e8e54810a1053232c3c2d6955912abc26eb0fbe887529b70c7ef79f97cee071c1cd5992f13b4db750897e5385ac419d0c2304fd4fdaed5c6192778
   languageName: node
   linkType: hard
 
@@ -979,8 +979,8 @@ __metadata:
   resolution: "@digital-alchemy/type-writer@workspace:."
   dependencies:
     "@cspell/eslint-plugin": "npm:^8.7.0"
-    "@digital-alchemy/core": "npm:^24.6.4"
-    "@digital-alchemy/hass": "npm:^24.6.9"
+    "@digital-alchemy/core": "npm:^24.7.1"
+    "@digital-alchemy/hass": "npm:^24.7.4"
     "@types/figlet": "npm:^1.5.8"
     "@types/jest": "npm:^29.5.12"
     "@types/js-yaml": "npm:^4.0.9"

@@ -2,13 +2,13 @@
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
   "homepage": "https://docs.digital-alchemy.app/Type-Writer",
-  "version": "24.6.6",
+  "version": "24.7.1",
   "scripts": {
     "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
     "test": "./scripts/test.sh",
     "prepublishOnly": "yarn build",
-    "upgrade": "ncu -u -f '@digital-alchemy/*'; yarn"
+    "upgrade": "yarn up '@digital-alchemy/*'"
   },
   "author": {
     "url": "https://github.com/zoe-codez",
@@ -37,8 +37,8 @@
   },
   "devDependencies": {
     "@cspell/eslint-plugin": "^8.7.0",
-    "@digital-alchemy/core": "^24.6.4",
-    "@digital-alchemy/hass": "^24.6.9",
+    "@digital-alchemy/core": "^24.7.1",
+    "@digital-alchemy/hass": "^24.7.4",
     "@types/figlet": "^1.5.8",
     "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.9",

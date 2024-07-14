@@ -42,30 +42,30 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
         RegistryType(
           "area",
           hass.area.current.map(({ area_id }) =>
-            ItemObject(`_${area_id}`, hass.entity.byArea(area_id)),
+            ItemObject(`_${area_id}`, hass.idBy.area(area_id)),
           ),
         ),
         RegistryType(
           "platform",
           uniquePlatforms().map(platform =>
-            ItemObject(`_${platform}`, hass.entity.byPlatform(platform)),
+            ItemObject(`_${platform}`, hass.idBy.platform(platform)),
           ),
         ),
         RegistryType(
           "label",
           hass.label.current.map(({ label_id }) =>
-            ItemObject(`_${label_id}`, hass.entity.byLabel(label_id)),
+            ItemObject(`_${label_id}`, hass.idBy.label(label_id)),
           ),
         ),
         RegistryType(
           "floor",
           hass.floor.current.map(({ floor_id }) =>
-            ItemObject(`_${floor_id}`, hass.entity.byFloor(floor_id)),
+            ItemObject(`_${floor_id}`, hass.idBy.floor(floor_id)),
           ),
         ),
         RegistryType(
           "device",
-          hass.device.current.map(({ id }) => ItemObject(`_${id}`, hass.entity.byDevice(id))),
+          hass.device.current.map(({ id }) => ItemObject(`_${id}`, hass.idBy.device(id))),
         ),
       ]),
     );
@@ -152,8 +152,16 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
         "TUniqueID",
         factory.createUnionTypeNode(
           hass.entity.registry.current
-            .filter(i => !is.empty(i.entity_id) && !is.empty(i.unique_id))
-            .map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i.unique_id))),
+            .filter(
+              i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)),
+            )
+            .map(item =>
+              factory.createLiteralTypeNode(
+                is.number(item.unique_id)
+                  ? factory.createNumericLiteral(item.unique_id)
+                  : factory.createStringLiteral(item.unique_id),
+              ),
+            ),
         ),
       );
     },
@@ -162,13 +170,19 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
         "TUniqueIDMapping",
         factory.createTypeLiteralNode(
           hass.entity.registry.current
-            .filter(i => !is.empty(i.entity_id) && !is.empty(i.unique_id))
+            .filter(
+              i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)),
+            )
             .map(item =>
               factory.createPropertySignature(
                 undefined,
                 factory.createStringLiteral(item.entity_id),
                 undefined,
-                factory.createLiteralTypeNode(factory.createStringLiteral(item.unique_id)),
+                factory.createLiteralTypeNode(
+                  is.number(item.unique_id)
+                    ? factory.createNumericLiteral(item.unique_id)
+                    : factory.createStringLiteral(item.unique_id),
+                ),
               ),
             ),
         ),

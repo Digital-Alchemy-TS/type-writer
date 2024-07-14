@@ -4,7 +4,7 @@ import { factory, SyntaxKind, TypeElement, TypeNode } from "typescript";
 
 export function DomainBuilder({ hass, type_build, logger }: TServiceParams) {
   async function buildEntityDomain(entity_id: ANY_ENTITY) {
-    const entity = hass.entity.raw(entity_id);
+    const entity = hass.entity.getCurrentState(entity_id);
 
     // @ts-expect-error no cares given
     const builder = DOMAIN_BUILDERS[domain(entity_id)] || DOMAIN_BUILDERS.generic;
