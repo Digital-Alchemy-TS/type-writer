@@ -152,8 +152,12 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
         "TUniqueID",
         factory.createUnionTypeNode(
           hass.entity.registry.current
-            .filter(i => !is.empty(i.entity_id) && !is.empty(i.unique_id))
-            .map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i.unique_id))),
+            .filter(
+              i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)),
+            )
+            .map(i =>
+              factory.createLiteralTypeNode(factory.createStringLiteral(String(i.unique_id))),
+            ),
         ),
       );
     },
