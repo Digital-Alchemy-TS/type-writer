@@ -13,18 +13,15 @@ export function FieldBuilder({ type_build }: TServiceParams) {
     if ("object" in selector && selector.object === null) {
       if (serviceDomain === "notify" && parameterName === "data") {
         return factory.createIntersectionTypeNode([
-          factory.createTypeReferenceNode(
-            factory.createIdentifier("ActionableNotification"),
-            undefined,
-          ),
+          factory.createTypeReferenceNode(factory.createIdentifier("NotificationData"), undefined),
           factory.createParenthesizedType(
             factory.createUnionTypeNode([
               factory.createTypeReferenceNode(
-                factory.createIdentifier("AndroidActionableNotification"),
+                factory.createIdentifier("AndroidNotificationData"),
                 undefined,
               ),
               factory.createTypeReferenceNode(
-                factory.createIdentifier("AppleActionableNotification"),
+                factory.createIdentifier("AppleNotificationData"),
                 undefined,
               ),
             ]),
