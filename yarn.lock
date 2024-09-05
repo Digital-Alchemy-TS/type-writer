@@ -958,9 +958,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@digital-alchemy/hass@npm:^24.8.3":
-  version: 24.8.3
-  resolution: "@digital-alchemy/hass@npm:24.8.3"
+"@digital-alchemy/hass@npm:^24.9.1":
+  version: 24.9.1
+  resolution: "@digital-alchemy/hass@npm:24.9.1"
   dependencies:
     dayjs: "npm:^1.11.11"
     prom-client: "npm:^15.1.2"
@@ -971,7 +971,7 @@ __metadata:
     "@digital-alchemy/core": "*"
   bin:
     mock-assistant: dist/mock_assistant/main.js
-  checksum: 10/0ed096946fc157a536e66fd15416538bf126af799d46fe194aa0326c46f64f944fe92de2a87d8c8caa7e62ba72fdb7ba155ce0d0a4af90a00fdf4cbf61fc0bfd
+  checksum: 10/8f3eb619187efc2750c9d768c8b1296d564cbf2e9969c902ada293b314a2ad8aba0435248d91f00a8bfd189db45d079e90933854cec472bf171ae238dd5ed5e2
   languageName: node
   linkType: hard
 
@@ -981,7 +981,7 @@ __metadata:
   dependencies:
     "@cspell/eslint-plugin": "npm:^8.7.0"
     "@digital-alchemy/core": "npm:^24.8.4"
-    "@digital-alchemy/hass": "npm:^24.8.3"
+    "@digital-alchemy/hass": "npm:^24.9.1"
     "@types/figlet": "npm:^1.5.8"
     "@types/jest": "npm:^29.5.12"
     "@types/js-yaml": "npm:^4.0.9"
