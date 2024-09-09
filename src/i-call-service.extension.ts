@@ -49,15 +49,23 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
       // >     [service_name]: (service_data) => Promise<void | unknown>
       // >   }
       // > }
+      const genericIdent = "T";
       return type_build.tsdoc.serviceComment(
         factory.createMethodSignature(
           undefined,
           factory.createIdentifier(key),
           undefined,
-          undefined,
+          [
+            factory.createTypeParameterDeclaration(
+              undefined,
+              factory.createIdentifier(genericIdent),
+              undefined,
+              factory.createKeywordTypeNode(SyntaxKind.VoidKeyword),
+            ),
+          ],
           serviceParameters(domain, key, value),
-          factory.createTypeReferenceNode(factory.createIdentifier("Promise"), [
-            factory.createKeywordTypeNode(SyntaxKind.VoidKeyword),
+          factory.createExpressionWithTypeArguments(factory.createIdentifier("Promise"), [
+            factory.createTypeReferenceNode(factory.createIdentifier(genericIdent), undefined),
           ]),
         ),
         key,
