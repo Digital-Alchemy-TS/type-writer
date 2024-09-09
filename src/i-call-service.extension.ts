@@ -1,6 +1,6 @@
 import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
 import { HassServiceDTO, ServiceListField, ServiceListServiceTarget } from "@digital-alchemy/hass";
-import { factory, SyntaxKind, TypeElement, TypeNode } from "typescript";
+import { factory, SyntaxKind, TypeElement, TypeNode, TypeParameterDeclaration } from "typescript";
 
 export async function ICallServiceExtension({ hass, type_build }: TServiceParams) {
   return async function () {
@@ -49,31 +49,49 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
       // >     [service_name]: (service_data) => Promise<void | unknown>
       // >   }
       // > }
+      const isReturnResponse = is.boolean(value.response?.optional);
       const genericIdent = "T";
-      let defaultReturnType: TypeNode = factory.createKeywordTypeNode(SyntaxKind.VoidKeyword);
+
+      // Override default return type for some known cases
+      let defaultReturnType: TypeNode = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
       if (domain === "weather" && key === "get_forecasts") {
         defaultReturnType = factory.createTypeReferenceNode(
           factory.createIdentifier("WeatherGetForecasts"),
           undefined,
         );
       }
+
+      // Set up for the default case of (service_data) => Promise<void>
+      let generic: TypeParameterDeclaration[] | undefined = undefined;
+      let returnType: TypeNode | undefined = factory.createTypeReferenceNode(
+        factory.createIdentifier("Promise"),
+        [factory.createKeywordTypeNode(SyntaxKind.VoidKeyword)],
+      );
+
+      // If the service might return a response, change instead to <T = unknown>(service_data) => Promise<T>
+      if (isReturnResponse) {
+        generic = [
+          factory.createTypeParameterDeclaration(
+            undefined,
+            factory.createIdentifier(genericIdent),
+            undefined,
+            defaultReturnType,
+          ),
+        ];
+        returnType = factory.createExpressionWithTypeArguments(
+          factory.createIdentifier("Promise"),
+          [factory.createTypeReferenceNode(factory.createIdentifier(genericIdent), undefined)],
+        );
+      }
+
       return type_build.tsdoc.serviceComment(
         factory.createMethodSignature(
           undefined,
           factory.createIdentifier(key),
           undefined,
-          [
-            factory.createTypeParameterDeclaration(
-              undefined,
-              factory.createIdentifier(genericIdent),
-              undefined,
-              defaultReturnType,
-            ),
-          ],
+          generic,
           serviceParameters(domain, key, value),
-          factory.createExpressionWithTypeArguments(factory.createIdentifier("Promise"), [
-            factory.createTypeReferenceNode(factory.createIdentifier(genericIdent), undefined),
-          ]),
+          returnType,
         ),
         key,
         value,
