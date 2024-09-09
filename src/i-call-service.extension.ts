@@ -1,6 +1,6 @@
 import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
 import { HassServiceDTO, ServiceListField, ServiceListServiceTarget } from "@digital-alchemy/hass";
-import { factory, SyntaxKind, TypeElement } from "typescript";
+import { factory, SyntaxKind, TypeElement, TypeNode } from "typescript";
 
 export async function ICallServiceExtension({ hass, type_build }: TServiceParams) {
   return async function () {
@@ -50,6 +50,13 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
       // >   }
       // > }
       const genericIdent = "T";
+      let defaultReturnType: TypeNode = factory.createKeywordTypeNode(SyntaxKind.VoidKeyword);
+      if (domain === "weather" && key === "get_forecasts") {
+        defaultReturnType = factory.createTypeReferenceNode(
+          factory.createIdentifier("WeatherGetForecasts"),
+          undefined,
+        );
+      }
       return type_build.tsdoc.serviceComment(
         factory.createMethodSignature(
           undefined,
@@ -60,7 +67,7 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
               undefined,
               factory.createIdentifier(genericIdent),
               undefined,
-              factory.createKeywordTypeNode(SyntaxKind.VoidKeyword),
+              defaultReturnType,
             ),
           ],
           serviceParameters(domain, key, value),
