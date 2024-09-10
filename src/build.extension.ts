@@ -59,6 +59,7 @@ export function BuildTypes({ logger, hass, type_build, config, internal }: TServ
         `  AppleNotificationData,`,
         `  NotificationData,`,
         `  PICK_ENTITY,`,
+        `  WeatherGetForecasts,`,
         `} from "./helpers";`,
         ``,
         PICK_FROM_PLATFORM,
