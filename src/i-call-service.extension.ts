@@ -7,7 +7,12 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
     const domains = await hass.fetch.listServices();
     const sortedDomains = domains.sort((a, b) => (a.domain > b.domain ? UP : DOWN));
 
-    function serviceParameters(domain: string, key: string, value: ServiceListField) {
+    function serviceParameters(
+      domain: string,
+      key: string,
+      value: ServiceListField,
+      genericEntities: string,
+    ) {
       // If the object doesn't require any properties to be passed, then
       // the entire argument should be flagged as optional
       const everythingIsOptional = Object.values(value.fields).some(i =>
@@ -34,7 +39,10 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
                 .map(([service, details]) =>
                   type_build.fields.fieldPropertySignature(service, details, domain, key),
                 ),
-              type_build.entity.createTarget(value.target as ServiceListServiceTarget),
+              type_build.entity.createTarget(
+                value.target as ServiceListServiceTarget,
+                genericEntities,
+              ),
             ].filter(i => !is.undefined(i)) as TypeElement[],
           ),
         ),
@@ -51,18 +59,43 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
       // > }
       const isReturnResponse = is.boolean(value.response?.optional);
       const genericIdent = "T";
+      let genericIdentities = "";
+      const generic = [] as TypeParameterDeclaration[];
 
       // Override default return type for some known cases
       let defaultReturnType: TypeNode = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
+      // * weather.get_forecasts
       if (domain === "weather" && key === "get_forecasts") {
-        defaultReturnType = factory.createTypeReferenceNode(
-          factory.createIdentifier("WeatherGetForecasts"),
-          undefined,
+        // https://github.com/Digital-Alchemy-TS/hass/issues/66
+        genericIdentities = "ENTITIES";
+        defaultReturnType = factory.createTypeReferenceNode(factory.createIdentifier("Record"), [
+          factory.createTypeReferenceNode(factory.createIdentifier("ENTITIES"), undefined),
+          factory.createTypeLiteralNode([
+            factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("forecasts"),
+              undefined,
+              factory.createArrayTypeNode(
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier("WeatherGetForecasts"),
+                  undefined,
+                ),
+              ),
+            ),
+          ]),
+        ]);
+        generic.push(
+          factory.createTypeParameterDeclaration(
+            undefined,
+            factory.createIdentifier(genericIdentities),
+            factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), [
+              factory.createLiteralTypeNode(factory.createStringLiteral("weather")),
+            ]),
+            undefined,
+          ),
         );
       }
 
-      // Set up for the default case of (service_data) => Promise<void>
-      let generic: TypeParameterDeclaration[] | undefined = undefined;
       let returnType: TypeNode | undefined = factory.createTypeReferenceNode(
         factory.createIdentifier("Promise"),
         [factory.createKeywordTypeNode(SyntaxKind.VoidKeyword)],
@@ -70,14 +103,14 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
 
       // If the service might return a response, change instead to <T = unknown>(service_data) => Promise<T>
       if (isReturnResponse) {
-        generic = [
+        generic.push(
           factory.createTypeParameterDeclaration(
             undefined,
             factory.createIdentifier(genericIdent),
             undefined,
             defaultReturnType,
           ),
-        ];
+        );
         returnType = factory.createExpressionWithTypeArguments(
           factory.createIdentifier("Promise"),
           [factory.createTypeReferenceNode(factory.createIdentifier(genericIdent), undefined)],
@@ -90,7 +123,7 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
           factory.createIdentifier(key),
           undefined,
           generic,
-          serviceParameters(domain, key, value),
+          serviceParameters(domain, key, value, genericIdentities),
           returnType,
         ),
         key,

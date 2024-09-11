@@ -91,7 +91,7 @@ export function EntityReference({ logger, type_build }: TServiceParams) {
     });
   }
   // #MARK: createTarget
-  function createTarget(target: ServiceListServiceTarget) {
+  function createTarget(target: ServiceListServiceTarget, generic: string) {
     if (is.empty(target)) {
       return undefined;
     }
@@ -100,7 +100,14 @@ export function EntityReference({ logger, type_build }: TServiceParams) {
         undefined,
         factory.createIdentifier("entity_id"),
         undefined,
-        generateEntityList(target),
+        is.empty(generic)
+          ? generateEntityList(target)
+          : factory.createUnionTypeNode([
+              factory.createTypeReferenceNode(factory.createIdentifier(generic), undefined),
+              factory.createArrayTypeNode(
+                factory.createTypeReferenceNode(factory.createIdentifier(generic), undefined),
+              ),
+            ]),
       );
       return addSyntheticLeadingComment(
         property,
