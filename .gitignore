@@ -12,7 +12,7 @@ apps/**/yarn.lock
 # dependencies
 **/node_modules
 config.json
-test.d.ts
+/*.d.ts
 
 # IDEs and editors
 /.idea
@@ -125,3 +125,4 @@ review.zip
 dynamic.d.ts
 /obsidian/.obsidian
 .yarn/install-state.gz
+.env
