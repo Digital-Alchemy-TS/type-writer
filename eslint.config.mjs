@@ -92,6 +92,7 @@ export default [
             "e": false,
             "dir": false,
             "i": false,
+            "doc": false,
             "params": false,
             "fn": false,
             "props": false,
@@ -109,6 +110,7 @@ export default [
       "sonarjs/fixme-tag": "off",
       "sort-keys-fix/sort-keys-fix": "warn",
       "unicorn/prefer-event-target": "off",
+      "unicorn/consistent-function-scoping": "off",
       "simple-import-sort/imports": "warn",
       "sonarjs/no-misused-promises": "off",
       "sonarjs/no-commented-code": "off",
@@ -127,6 +129,21 @@ export default [
       ],
       "@typescript-eslint/no-explicit-any": "error"
     }
+  },
+  // module definitions
+  {
+    files: ["src/**/*.module.ts"],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 5,
+      sourceType: "script",
+      parserOptions: {
+        project: ["tsconfig.json"],
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-magic-numbers": "off",
+    },
   },
   {
     files: ["src/**/*.spec.ts"],

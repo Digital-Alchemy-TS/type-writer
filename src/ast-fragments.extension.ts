@@ -54,7 +54,6 @@ export function ASTFragmentsExtension() {
               break;
             }
             case "object": {
-              // eslint-disable-next-line unicorn/prefer-ternary
               if (is.array(value)) {
                 showHelp = false;
                 // @ts-expect-error because it sucks at keeping track of types

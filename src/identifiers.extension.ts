@@ -1,10 +1,9 @@
-/* eslint-disable unicorn/consistent-function-scoping */
 import { is, TServiceParams } from "@digital-alchemy/core";
 import { domain, ENTITY_STATE, PICK_ENTITY } from "@digital-alchemy/hass";
 import { factory, PropertySignature, SyntaxKind } from "typescript";
 
 export function Identifiers({ hass, type_build }: TServiceParams) {
-  function RegistryType(type: string, value: PropertySignature[]) {
+  function registryType(type: string, value: PropertySignature[]) {
     return factory.createPropertySignature(
       undefined,
       factory.createIdentifier(type),
@@ -13,7 +12,7 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
     );
   }
 
-  function EntityUnion(list: PICK_ENTITY[]) {
+  function entityUnion(list: PICK_ENTITY[]) {
     if (is.empty(list)) {
       return factory.createKeywordTypeNode(SyntaxKind.NeverKeyword);
     }
@@ -26,12 +25,12 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
     return is.unique(hass.entity.registry.current.map(i => i.platform));
   }
 
-  function ItemObject(name: string, entities: PICK_ENTITY[]) {
+  function itemObject(name: string, entities: PICK_ENTITY[]) {
     return factory.createPropertySignature(
       undefined,
       factory.createIdentifier(name),
       undefined,
-      EntityUnion(entities),
+      entityUnion(entities),
     );
   }
 
@@ -39,40 +38,39 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
     return type_build.printer(
       "REGISTRY_SETUP",
       factory.createTypeLiteralNode([
-        RegistryType(
+        registryType(
           "area",
           hass.area.current.map(({ area_id }) =>
-            ItemObject(`_${area_id}`, hass.idBy.area(area_id)),
+            itemObject(`_${area_id}`, hass.idBy.area(area_id)),
           ),
         ),
-        RegistryType(
+        registryType(
           "platform",
           uniquePlatforms().map(platform =>
-            ItemObject(`_${platform}`, hass.idBy.platform(platform)),
+            itemObject(`_${platform}`, hass.idBy.platform(platform)),
           ),
         ),
-        RegistryType(
+        registryType(
           "label",
           hass.label.current.map(({ label_id }) =>
-            ItemObject(`_${label_id}`, hass.idBy.label(label_id)),
+            itemObject(`_${label_id}`, hass.idBy.label(label_id)),
           ),
         ),
-        RegistryType(
+        registryType(
           "floor",
           hass.floor.current.map(({ floor_id }) =>
-            ItemObject(`_${floor_id}`, hass.idBy.floor(floor_id)),
+            itemObject(`_${floor_id}`, hass.idBy.floor(floor_id)),
           ),
         ),
-        RegistryType(
+        registryType(
           "device",
-          hass.device.current.map(({ id }) => ItemObject(`_${id}`, hass.idBy.device(id))),
+          hass.device.current.map(({ id }) => itemObject(`_${id}`, hass.idBy.device(id))),
         ),
       ]),
     );
   }
 
   return {
-    RegistryDetails,
     area() {
       return type_build.printer(
         "TAreaId",
@@ -147,6 +145,7 @@ export function Identifiers({ hass, type_build }: TServiceParams) {
         ),
       );
     },
+    registryDetails: RegistryDetails,
     uniqueId() {
       return type_build.printer(
         "TUniqueID",

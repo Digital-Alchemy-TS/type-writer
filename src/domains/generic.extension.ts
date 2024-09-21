@@ -1,7 +1,6 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
 import { ANY_ENTITY, ENTITY_STATE } from "@digital-alchemy/hass";
 import { factory, SyntaxKind } from "typescript";
-import { isNumeric } from "validator";
 
 export function GenericDomainBuilder({ type_build }: TServiceParams) {
   type_build.domain.register({
@@ -14,7 +13,7 @@ export function GenericDomainBuilder({ type_build }: TServiceParams) {
     domain: "generic",
     state(data) {
       const entity = data as ENTITY_STATE<ANY_ENTITY>;
-      if (is.number(entity.state) || isNumeric(entity.state)) {
+      if (is.number(Number(entity.state))) {
         return factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
       }
       return factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
