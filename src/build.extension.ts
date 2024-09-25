@@ -29,7 +29,7 @@ export function BuildTypes({ logger, hass, type_build, config, internal }: TServ
         }
         logger.warn({ path }, `creating new type definitions file`);
       }
-      const text = await DoBuild();
+      const text = await doBuild();
       writeFileSync(path, text);
       logger.warn({ path }, `successfully wrote type definitions file`);
       logger.info(`{reload your editor to update types}`);
@@ -39,7 +39,7 @@ export function BuildTypes({ logger, hass, type_build, config, internal }: TServ
   }
 
   // see file - libs/home-assistant/src/dynamic.ts
-  async function DoBuild() {
+  async function doBuild() {
     logger.info(`Pulling information`);
     const entities = await hass.fetch.getAllEntities();
     const entitySetup = {};
@@ -71,7 +71,7 @@ export function BuildTypes({ logger, hass, type_build, config, internal }: TServ
         typeInterface,
         ``,
         `// #MARK: REGISTRY_SETUP`,
-        type_build.identifiers.RegistryDetails(),
+        type_build.identifiers.registryDetails(),
         ``,
         `// #MARK: TAreaId`,
         type_build.identifiers.area(),

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { START } from "@digital-alchemy/core";
 import { exit } from "process";
 import {

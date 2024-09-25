@@ -1,7 +1,6 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
 import { ENTITY_STATE, PICK_ENTITY } from "@digital-alchemy/hass";
 import { factory, SyntaxKind } from "typescript";
-import { isNumeric } from "validator";
 
 export function LightBuilder({ type_build }: TServiceParams) {
   type_build.domain.register<"light">({
@@ -32,7 +31,7 @@ export function LightBuilder({ type_build }: TServiceParams) {
     domain: "light",
     state(data) {
       const entity = data as ENTITY_STATE<PICK_ENTITY<"light">>;
-      if (is.number(entity.state) || isNumeric(entity.state)) {
+      if (is.number(Number(entity.state))) {
         return factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
       }
       const attributes = data.attributes as object as { options: string[] };

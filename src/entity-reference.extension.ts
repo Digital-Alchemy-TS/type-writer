@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/consistent-function-scoping */
 import { FIRST, is, TServiceParams } from "@digital-alchemy/core";
 import {
   ALL_DOMAINS,

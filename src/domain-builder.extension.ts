@@ -50,7 +50,7 @@ export function DomainBuilder({ hass, type_build, logger }: TServiceParams) {
   };
   return {
     async build() {
-      hass.entity.listEntities().filter(entity_id => {
+      const entities = hass.entity.listEntities().filter(entity_id => {
         const found = hass.entity.registry.current.find(i => i.entity_id === entity_id);
         if (!found) {
           logger.debug({ name: entity_id }, `cannot find in registry, assuming not disabled`);
@@ -58,7 +58,6 @@ export function DomainBuilder({ hass, type_build, logger }: TServiceParams) {
         }
         return is.empty(found?.disabled_by);
       });
-      const entities = hass.entity.listEntities();
       const out = [] as TypeElement[];
       await each(entities, async domain => out.push(await buildEntityDomain(domain)));
       return type_build.printer("ENTITY_SETUP", factory.createTypeLiteralNode(out));

@@ -5,7 +5,7 @@ import { factory, SyntaxKind, TypeElement, TypeNode, TypeParameterDeclaration } 
 export async function ICallServiceExtension({ hass, type_build }: TServiceParams) {
   return async function () {
     const domains = await hass.fetch.listServices();
-    const sortedDomains = domains.sort((a, b) => (a.domain > b.domain ? UP : DOWN));
+    const sortedDomains = domains.toSorted((a, b) => a.domain.localeCompare(b.domain));
 
     function serviceParameters(
       domain: string,

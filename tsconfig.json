@@ -6,11 +6,9 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": [
-      "ESNext"
-    ],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "noImplicitAny": true,
     "declaration": true,
     "noImplicitReturns": true,
@@ -19,6 +17,7 @@
     "rootDir": "./src",
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
     "sourceMap": true,
     "outDir": "./dist",
     "strict": false,
@@ -33,6 +32,6 @@
   "exclude": [
     "node_modules",
     "tmp",
-    "dist"
+    "dist",
   ]
 }

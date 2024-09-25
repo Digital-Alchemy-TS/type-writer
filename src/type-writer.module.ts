@@ -27,7 +27,7 @@ import { ICallServiceExtension } from "./i-call-service.extension";
 import { Identifiers } from "./identifiers.extension";
 import { Printer } from "./printer.extension";
 import { QuickTypeExtension } from "./quicktype.extension";
-import { TSDoc } from "./tsdoc.extension";
+import { TSDoc as TSDocument } from "./tsdoc.extension";
 
 const DOMAINS = {
   binary_sensor: BinarySensorBuilder,
@@ -67,7 +67,7 @@ export const TYPE_BUILD = CreateLibrary({
     identifiers: Identifiers,
     printer: Printer,
     quicktype: QuickTypeExtension,
-    tsdoc: TSDoc,
+    tsdoc: TSDocument,
   },
 });
 
