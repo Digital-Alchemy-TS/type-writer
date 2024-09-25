@@ -15,9 +15,11 @@
     "url": "https://github.com/zoe-codez",
     "name": "Zoe Codez"
   },
-  "bin": "./dist/main.js",
+  "bin": "./scripts/run/sh",
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "scripts/**/*",
+    "src/**/*"
   ],
   "engines": {
     "node": ">=20"
