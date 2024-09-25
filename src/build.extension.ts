@@ -1,7 +1,8 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
 import { existsSync, writeFileSync } from "fs";
-import { join } from "path";
+import { dirname, join } from "path";
 import { exit } from "process";
+import { fileURLToPath } from "url";
 
 const PICK_FROM_PLATFORM = `type PICK_FROM_PLATFORM<
   ID extends TPlatformId,
@@ -18,7 +19,7 @@ export function BuildTypes({ logger, hass, type_build, config, internal }: TServ
       // ../../hass/dist/dynamic.d.ts
       //
       const path = is.empty(config.type_build.TARGET_FILE)
-        ? join(__dirname, "..", "..", "hass", "dist", "dynamic.d.ts")
+        ? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "hass", "dist", "dynamic.d.ts")
         : config.type_build.TARGET_FILE;
       if (!existsSync(path)) {
         if (config.type_build.TARGET_FILE !== path) {
