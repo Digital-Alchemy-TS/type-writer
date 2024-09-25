@@ -2263,7 +2263,7 @@ __metadata:
     "@digital-alchemy/core": "*"
     "@digital-alchemy/hass": "*"
   bin:
-    type-writer: ./scripts/run/sh
+    type-writer: ./scripts/run.sh
   languageName: unknown
   linkType: soft
 
