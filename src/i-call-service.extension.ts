@@ -73,7 +73,7 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
           factory.createTypeLiteralNode([
             factory.createPropertySignature(
               undefined,
-              factory.createIdentifier("forecasts"),
+              factory.createIdentifier("forecast"),
               undefined,
               factory.createArrayTypeNode(
                 factory.createTypeReferenceNode(
