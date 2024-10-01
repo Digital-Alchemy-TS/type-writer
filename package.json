@@ -48,7 +48,7 @@
     "@types/figlet": "^1.5.8",
     "@types/jest": "^29.5.13",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.7.0",
+    "@types/node": "^22.7.4",
     "@types/node-cron": "^3",
     "@types/validator": "^13.12.2",
     "@types/ws": "^8",
