@@ -52,7 +52,7 @@
     "@types/node-cron": "^3",
     "@types/validator": "^13.12.2",
     "@types/ws": "^8",
-    "@typescript-eslint/eslint-plugin": "8.7.0",
+    "@typescript-eslint/eslint-plugin": "8.8.0",
     "@typescript-eslint/parser": "8.7.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
