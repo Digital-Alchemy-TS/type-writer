@@ -2220,9 +2220,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@digital-alchemy/core@npm:^24.9.5":
-  version: 24.9.5
-  resolution: "@digital-alchemy/core@npm:24.9.5"
+"@digital-alchemy/core@npm:^24.10.4":
+  version: 24.10.4
+  resolution: "@digital-alchemy/core@npm:24.10.4"
   dependencies:
     chalk: "npm:^5"
     dayjs: "npm:^1"
@@ -2232,7 +2232,7 @@ __metadata:
     minimist: "npm:^1"
     node-cron: "npm:^3"
     uuid: "npm:^9 || ^10"
-  checksum: 10/efbefc2c620654d65fb8588e20f3ba23616712118d5bd7d0edbcbac92719b3a9152112c1e8dee8ecbb12dfdac45e6845afe57e2c42f964c8be3122b2e9a254c1
+  checksum: 10/19c904f8641c2a4f6030086307b831b0bab1c4addc36379cefa67bbca3e804c0a9556e009e57cdfd4557adec78190b8569f97c2f0d755532c6700d511b215ddc
   languageName: node
   linkType: hard
 
@@ -2256,7 +2256,7 @@ __metadata:
   resolution: "@digital-alchemy/type-writer@workspace:."
   dependencies:
     "@cspell/eslint-plugin": "npm:^8.14.4"
-    "@digital-alchemy/core": "npm:^24.9.5"
+    "@digital-alchemy/core": "npm:^24.10.4"
     "@digital-alchemy/hass": "npm:^24.9.4"
     "@eslint/compat": "npm:^1.1.1"
     "@eslint/eslintrc": "npm:^3.1.0"
