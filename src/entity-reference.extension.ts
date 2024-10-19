@@ -139,7 +139,7 @@ export function EntityReference({ logger, type_build }: TServiceParams) {
         ),
         factory.createPropertySignature(
           undefined,
-          factory.createIdentifier("label"),
+          factory.createIdentifier("label_id"),
           undefined,
           factory.createUnionTypeNode([
             factory.createTypeReferenceNode(factory.createIdentifier("TLabelId"), undefined),
