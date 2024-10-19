@@ -1,5 +1,4 @@
 import { is } from "@digital-alchemy/core";
-import { PICK_ENTITY } from "@digital-alchemy/hass";
 import { dump } from "js-yaml";
 import {
   addSyntheticLeadingComment,
@@ -131,18 +130,6 @@ export function ASTFragmentsExtension() {
 
   return {
     attributes,
-    // #MARK: entity_id
-    /**
-     * "entity_id": "domain.object_id"
-     */
-    entity_id: (entity_id: PICK_ENTITY) =>
-      factory.createPropertySignature(
-        undefined,
-        factory.createIdentifier("entity_id"),
-        undefined,
-        factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
-      ),
-
     tuple,
     union,
   };

@@ -19,6 +19,11 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
         is.boolean(i.required) ? !i.required : true,
       );
 
+      const targets = type_build.entity.createTarget(
+        value.target as ServiceListServiceTarget,
+        genericEntities,
+      );
+
       // * Build contents of object:
       // > iCallService = {
       // >  [DOMAIN]: {
@@ -32,19 +37,23 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
           undefined,
           factory.createIdentifier("service_data"),
           everythingIsOptional ? factory.createToken(SyntaxKind.QuestionToken) : undefined,
-          factory.createTypeLiteralNode(
-            [
-              ...Object.entries(value.fields)
+          factory.createIntersectionTypeNode([
+            factory.createTypeLiteralNode(
+              Object.entries(value.fields)
                 .sort(([a], [b]) => (a > b ? UP : DOWN))
                 .map(([service, details]) =>
                   type_build.fields.fieldPropertySignature(service, details, domain, key),
-                ),
-              type_build.entity.createTarget(
-                value.target as ServiceListServiceTarget,
-                genericEntities,
-              ),
-            ].filter(i => !is.undefined(i)) as TypeElement[],
-          ),
+                )
+                .filter(i => !is.undefined(i)) as TypeElement[],
+            ),
+            ...(is.empty(targets)
+              ? []
+              : [
+                  factory.createTypeReferenceNode(factory.createIdentifier("RequireAtLeastOne"), [
+                    factory.createTypeLiteralNode(targets),
+                  ]),
+                ]),
+          ]),
         ),
       ];
     }
