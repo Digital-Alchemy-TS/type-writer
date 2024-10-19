@@ -6,7 +6,7 @@ import {
   TPlatformId,
 } from "@digital-alchemy/hass";
 import { dump } from "js-yaml";
-import { addSyntheticLeadingComment, factory, SyntaxKind } from "typescript";
+import { addSyntheticLeadingComment, factory, PropertySignature, SyntaxKind } from "typescript";
 
 // * asdf
 type TargetReference = {
@@ -90,9 +90,9 @@ export function EntityReference({ logger, type_build }: TServiceParams) {
     });
   }
   // #MARK: createTarget
-  function createTarget(target: ServiceListServiceTarget, generic: string) {
+  function createTarget(target: ServiceListServiceTarget, generic: string): PropertySignature[] {
     if (is.empty(target)) {
-      return undefined;
+      return [];
     }
     if (target.entity) {
       const property = factory.createPropertySignature(
@@ -108,32 +108,67 @@ export function EntityReference({ logger, type_build }: TServiceParams) {
               ),
             ]),
       );
-      return addSyntheticLeadingComment(
-        property,
-        SyntaxKind.MultiLineCommentTrivia,
-        "*\n" +
-          [
-            "Assisted definition",
-            "> ```yaml",
-            ...dump(target)
-              .trim()
-              .split("\n")
-              .map(i => `> ${i}`),
-          ]
-            .map(i => ` * ${i}`)
-            .join(`\n`) +
-          "\n * > ```\n ",
-        true,
-      );
+      return [
+        addSyntheticLeadingComment(
+          property,
+          SyntaxKind.MultiLineCommentTrivia,
+          "*\n" +
+            [
+              "Assisted definition",
+              "> ```yaml",
+              ...dump(target)
+                .trim()
+                .split("\n")
+                .map(i => `> ${i}`),
+            ]
+              .map(i => ` * ${i}`)
+              .join(`\n`) +
+            "\n * > ```\n ",
+          true,
+        ),
+        factory.createPropertySignature(
+          undefined,
+          factory.createIdentifier("device_id"),
+          undefined,
+          factory.createUnionTypeNode([
+            factory.createTypeReferenceNode(factory.createIdentifier("TDeviceId"), undefined),
+            factory.createArrayTypeNode(
+              factory.createTypeReferenceNode(factory.createIdentifier("TDeviceId"), undefined),
+            ),
+          ]),
+        ),
+        factory.createPropertySignature(
+          undefined,
+          factory.createIdentifier("label_id"),
+          undefined,
+          factory.createUnionTypeNode([
+            factory.createTypeReferenceNode(factory.createIdentifier("TLabelId"), undefined),
+            factory.createArrayTypeNode(
+              factory.createTypeReferenceNode(factory.createIdentifier("TLabelId"), undefined),
+            ),
+          ]),
+        ),
+        factory.createPropertySignature(
+          undefined,
+          factory.createIdentifier("area_id"),
+          undefined,
+          factory.createUnionTypeNode([
+            factory.createTypeReferenceNode(factory.createIdentifier("TAreaId"), undefined),
+            factory.createArrayTypeNode(
+              factory.createTypeReferenceNode(factory.createIdentifier("TAreaId"), undefined),
+            ),
+          ]),
+        ),
+      ];
     }
     if (target.integration) {
-      return undefined;
+      return [];
     }
     if (target.device) {
-      return undefined;
+      return [];
     }
     logger.error({ target }, `createTarget doesn't know what to do with target`);
-    return undefined;
+    return [];
   }
 
   function buildEntitySetup() {
