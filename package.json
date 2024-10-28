@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@cspell/eslint-plugin": "^8.15.4",
-    "@digital-alchemy/core": "^24.10.5",
+    "@digital-alchemy/core": "^24.10.6",
     "@digital-alchemy/hass": "^24.10.1",
     "@eslint/compat": "^1.2.1",
     "@eslint/eslintrc": "^3.1.0",
