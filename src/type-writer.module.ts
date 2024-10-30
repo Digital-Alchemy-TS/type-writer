@@ -46,13 +46,7 @@ const DOMAINS = {
   weather: WeatherBuilder,
 };
 
-export const TYPE_BUILD = CreateLibrary({
-  configuration: {
-    TARGET_FILE: {
-      description: "Define a file to write types to. Autodetect = default behavior",
-      type: "string",
-    },
-  },
+export const LIB_TYPE_BUILD = CreateLibrary({
   depends: [LIB_HASS],
   name: "type_build",
   priorityInit: ["domain"],
@@ -73,6 +67,6 @@ export const TYPE_BUILD = CreateLibrary({
 
 declare module "@digital-alchemy/core" {
   export interface LoadedModules {
-    type_build: typeof TYPE_BUILD;
+    type_build: typeof LIB_TYPE_BUILD;
   }
 }

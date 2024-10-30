@@ -1,46 +1,14 @@
-import { is, TServiceParams } from "@digital-alchemy/core";
-import { existsSync, writeFileSync } from "fs";
-import { dirname, join } from "path";
+import { TServiceParams } from "@digital-alchemy/core";
 import { exit } from "process";
-import { fileURLToPath } from "url";
 
 const PICK_FROM_PLATFORM = `type PICK_FROM_PLATFORM<
   ID extends TPlatformId,
   DOMAIN extends TRawDomains = TRawDomains,
 > = Extract<REGISTRY_SETUP["platform"][\`_\${ID}\`], PICK_ENTITY<DOMAIN>>;`;
 
-export function BuildTypes({ logger, hass, type_build, config, internal }: TServiceParams) {
-  async function runner() {
-    try {
-      // install location
-      // node_modules/@digital-alchemy/type-writer/dist/index.js
-      //
-      // relative target file
-      // ../../hass/dist/dynamic.d.ts
-      //
-      const path = is.empty(config.type_build.TARGET_FILE)
-        ? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "hass", "dist", "dynamic.d.ts")
-        : config.type_build.TARGET_FILE;
-      if (!existsSync(path)) {
-        if (config.type_build.TARGET_FILE !== path) {
-          // Represents an error with the script
-          // Calculated the wrong path, and something is up
-          logger.fatal({ path }, `cannot locate target file, aborting`);
-          return;
-        }
-        logger.warn({ path }, `creating new type definitions file`);
-      }
-      const text = await doBuild();
-      writeFileSync(path, text);
-      logger.warn({ path }, `successfully wrote type definitions file`);
-      logger.info(`{reload your editor to update types}`);
-    } catch (error) {
-      logger.fatal({ error }, `failed to write type definitions file`);
-    }
-  }
-
+export function BuildTypes({ logger, hass, type_build, internal }: TServiceParams) {
   // see file - libs/home-assistant/src/dynamic.ts
-  async function doBuild() {
+  return async function doBuild() {
     logger.info(`Pulling information`);
     const entities = await hass.fetch.getAllEntities();
     const entitySetup = {};
@@ -109,6 +77,5 @@ export function BuildTypes({ logger, hass, type_build, config, internal }: TServ
       logger.error({ error }, "failed to build data, please report");
       exit();
     }
-  }
-  return runner;
+  };
 }
