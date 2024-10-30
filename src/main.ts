@@ -3,10 +3,16 @@ import { CreateApplication } from "@digital-alchemy/core";
 import { LIB_HASS } from "@digital-alchemy/hass";
 
 import { Runner } from "./runner.extension";
-import { TYPE_BUILD } from "./type-writer.module";
+import { LIB_TYPE_BUILD } from "./type-writer.module";
 
 const TYPE_WRITER = CreateApplication({
-  libraries: [LIB_HASS, TYPE_BUILD],
+  configuration: {
+    TARGET_FILE: {
+      description: "Define a file to write types to. Autodetect = default behavior",
+      type: "string",
+    },
+  },
+  libraries: [LIB_HASS, LIB_TYPE_BUILD],
   name: "type_writer",
   services: {
     runner: Runner,
