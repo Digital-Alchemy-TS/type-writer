@@ -2043,18 +2043,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@digital-alchemy/hass@npm:^24.10.1":
-  version: 24.10.1
-  resolution: "@digital-alchemy/hass@npm:24.10.1"
-  peerDependencies:
-    "@digital-alchemy/core": "*"
-    dayjs: ^1
-    semver: ^7
-    uuid: ^10
-    ws: ^8
+"@digital-alchemy/hass@npm:^24.11.1":
+  version: 24.11.1
+  resolution: "@digital-alchemy/hass@npm:24.11.1"
+  dependencies:
+    "@digital-alchemy/core": "npm:^24.10.8"
+    dayjs: "npm:^1.11.13"
+    semver: "npm:^7.6.3"
+    type-fest: "npm:^4.26.1"
+    uuid: "npm:^11.0.2"
+    ws: "npm:^8.18.0"
   bin:
     mock-assistant: scripts/mock-assistant.sh
-  checksum: 10/f1b6ac5a2ebd451cc07a58673cd39dec9f6ebbb9f310c3b6bd82f6e9e621647fb782fa648e4a61603a97d904f9334d435e23bd0190b27675248d5c1f34594c32
+  checksum: 10/5e5657544009ef524daf8a78f4bcc919108523bae8aced056f4542f81f2c39b42d155a74535070085f0ba17d265aa999f3daca1f9171e164e7dbfdd84b5b7ffd
   languageName: node
   linkType: hard
 
@@ -2064,7 +2065,7 @@ __metadata:
   dependencies:
     "@cspell/eslint-plugin": "npm:^8.15.4"
     "@digital-alchemy/core": "npm:^24.10.8"
-    "@digital-alchemy/hass": "npm:^24.10.1"
+    "@digital-alchemy/hass": "npm:^24.11.1"
     "@eslint/compat": "npm:^1.2.2"
     "@eslint/eslintrc": "npm:^3.1.0"
     "@eslint/js": "npm:^9.13.0"

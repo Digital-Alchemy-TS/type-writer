@@ -41,7 +41,7 @@
   "devDependencies": {
     "@cspell/eslint-plugin": "^8.15.4",
     "@digital-alchemy/core": "^24.10.8",
-    "@digital-alchemy/hass": "^24.10.1",
+    "@digital-alchemy/hass": "^24.11.1",
     "@eslint/compat": "^1.2.2",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.13.0",
