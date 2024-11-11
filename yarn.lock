@@ -2071,7 +2071,7 @@ __metadata:
     "@types/figlet": "npm:^1.7.0"
     "@types/jest": "npm:^29.5.14"
     "@types/js-yaml": "npm:^4.0.9"
-    "@types/node": "npm:^22.8.4"
+    "@types/node": "npm:^22.9.0"
     "@types/node-cron": "npm:^3.0.11"
     "@types/validator": "npm:^13.12.2"
     "@types/ws": "npm:^8.5.12"
@@ -3022,12 +3022,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.8.4":
-  version: 22.8.4
-  resolution: "@types/node@npm:22.8.4"
+"@types/node@npm:^22.9.0":
+  version: 22.9.0
+  resolution: "@types/node@npm:22.9.0"
   dependencies:
     undici-types: "npm:~6.19.8"
-  checksum: 10/ee6b6b66c290a74bb37487f5ec533b7333c25e1b2f45016af4cd870408c4366f6fca75de5b8bb7a6e5836ab0536d2ef1910a89a2f797ae33a80344d0e81de03e
+  checksum: 10/a7df3426891868b0f5fb03e46aeddd8446178233521c624a44531c92a040cf08a82d8235f7e1e02af731fd16984665d4d71f3418caf9c2788313b10f040d615d
   languageName: node
   linkType: hard
 
