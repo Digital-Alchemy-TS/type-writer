@@ -22,12 +22,13 @@
     "outDir": "./dist",
     "strict": false,
     "strictBindCallApply": true,
+    "rewriteRelativeImportExtensions": true,
     "strictFunctionTypes": true,
     "target": "ESNext",
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.mts"
   ],
   "exclude": [
     "node_modules",

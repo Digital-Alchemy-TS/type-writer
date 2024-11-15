@@ -2,8 +2,8 @@
 import { CreateApplication } from "@digital-alchemy/core";
 import { LIB_HASS } from "@digital-alchemy/hass";
 
-import { Runner } from "./runner.extension";
-import { LIB_TYPE_BUILD } from "./type-writer.module";
+import { Runner } from "./runner.service.mts";
+import { LIB_TYPE_BUILD } from "./type-writer.module.mts";
 
 const TYPE_WRITER = CreateApplication({
   configuration: {
