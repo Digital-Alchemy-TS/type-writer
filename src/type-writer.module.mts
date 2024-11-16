@@ -2,9 +2,9 @@
 import { CreateLibrary } from "@digital-alchemy/core";
 import { LIB_HASS } from "@digital-alchemy/hass";
 
-import { ASTFragmentsExtension } from "./ast-fragments.extension";
-import { BuildTypes } from "./build.extension";
-import { DomainBuilder } from "./domain-builder.extension";
+import { ASTFragmentsExtension } from "./ast-fragments.service.mts";
+import { BuildTypes } from "./build.service.mts";
+import { DomainBuilder } from "./domain-builder.service.mts";
 import {
   BinarySensorBuilder,
   CameraBuilder,
@@ -20,14 +20,14 @@ import {
   SwitchBuilder,
   UpdateBuilder,
   WeatherBuilder,
-} from "./domains";
-import { EntityReference } from "./entity-reference.extension";
-import { FieldBuilder } from "./field-builder.extension";
-import { ICallServiceExtension } from "./i-call-service.extension";
-import { Identifiers } from "./identifiers.extension";
-import { Printer } from "./printer.extension";
-import { QuickTypeExtension } from "./quicktype.extension";
-import { TSDoc as TSDocument } from "./tsdoc.extension";
+} from "./domains/index.mts";
+import { EntityReference } from "./entity-reference.service.mts";
+import { FieldBuilder } from "./field-builder.service.mts";
+import { ICallServiceExtension } from "./i-call-service.service.mts";
+import { Identifiers } from "./identifiers.service.mts";
+import { Printer } from "./printer.service.mts";
+import { QuickTypeExtension } from "./quicktype.service.mts";
+import { TSDoc as TSDocument } from "./tsdoc.service.mts";
 
 const DOMAINS = {
   binary_sensor: BinarySensorBuilder,
