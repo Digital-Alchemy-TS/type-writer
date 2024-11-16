@@ -3,7 +3,7 @@
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
   "homepage": "https://docs.digital-alchemy.app/Type-Writer",
-  "version": "24.11.1",
+  "version": "24.11.2",
   "scripts": {
     "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
