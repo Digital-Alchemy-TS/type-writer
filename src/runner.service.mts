@@ -11,10 +11,10 @@ export function Runner({ type_build, lifecycle, logger, config }: TServiceParams
       // node_modules/@digital-alchemy/type-writer/dist/index.js
       //
       // relative target file
-      // ../../hass/dist/dynamic.d.ts
+      // ../../hass/dist/dynamic.d.mts
       //
       const path = is.empty(config.type_writer.TARGET_FILE)
-        ? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "hass", "dist", "dynamic.d.ts")
+        ? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "hass", "dist", "dynamic.d.mts")
         : config.type_writer.TARGET_FILE;
       if (!existsSync(path)) {
         if (config.type_writer.TARGET_FILE !== path) {
