@@ -2065,7 +2065,7 @@ __metadata:
     quicktype: "npm:^23.0.170"
     quicktype-core: "npm:^23.0.170"
     tsx: "npm:^4.19.2"
-    type-fest: "npm:^4.27.0"
+    type-fest: "npm:^4.28.0"
     typescript: "npm:^5.7.0-beta"
     validator: "npm:^13.12.0"
     ws: "npm:^8.18.0"
@@ -7545,6 +7545,13 @@ __metadata:
   version: 4.27.0
   resolution: "type-fest@npm:4.27.0"
   checksum: 10/13be3937f39ef94012ca622aa69c7edb87850b9b61ad7742e9d410b7a98fe28ee54b508ebb50fac5be2f8563fbc7b417a3d1ef129b9b092d6f3f67b7e1fca96f
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.28.0":
+  version: 4.28.0
+  resolution: "type-fest@npm:4.28.0"
+  checksum: 10/2fc54972af0aff1846786c11beeb2e446a1a6ea19b07ba80db1d3f24894002e0ed3de7f40d2a1007fe2e6e6da264a3790a844d744825dba3d31505d1983df2a5
   languageName: node
   linkType: hard
 
