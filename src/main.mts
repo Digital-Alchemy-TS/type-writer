@@ -7,6 +7,10 @@ import { LIB_TYPE_BUILD } from "./type-writer.module.mts";
 
 const TYPE_WRITER = CreateApplication({
   configuration: {
+    INCLUDE_UNAVAILABLE_STATE: {
+      default: false,
+      type: "boolean",
+    },
     TARGET_FILE: {
       description: "Define a file to write types to. Autodetect = default behavior",
       type: "string",
