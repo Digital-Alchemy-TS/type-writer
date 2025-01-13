@@ -31,6 +31,7 @@ export function BuildTypes({ logger, hass, type_build, internal }: TServiceParam
         `  PICK_ENTITY,`,
         `  WeatherGetForecasts,`,
         `} from "./helpers";`,
+        `import { DynamicMergeAttributes } from "./merge.mts";`,
         ``,
         PICK_FROM_PLATFORM,
         ``,
