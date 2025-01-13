@@ -32,7 +32,10 @@ export function DomainBuilder({ hass, type_build, logger }: TServiceParams) {
         factory.createIdentifier("attributes"),
         undefined,
         builder.attributes
-          ? await builder.attributes(entity)
+          ? factory.createTypeReferenceNode(factory.createIdentifier("DynamicMergeAttributes"), [
+              factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
+              await builder.attributes(entity),
+            ])
           : factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
       ),
     ]);
