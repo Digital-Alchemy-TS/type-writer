@@ -30,7 +30,7 @@ export function BuildTypes({ logger, hass, type_build, internal }: TServiceParam
         `  NotificationData,`,
         `  PICK_ENTITY,`,
         `  WeatherGetForecasts,`,
-        `} from "./helpers";`,
+        `} from "./helpers/index.mts";`,
         `import { DynamicMergeAttributes } from "./merge.mts";`,
         ``,
         PICK_FROM_PLATFORM,
