@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import "@digital-alchemy/hass/dev-types";
+
 import { CreateLibrary } from "@digital-alchemy/core";
 import { LIB_HASS } from "@digital-alchemy/hass";
 
@@ -26,8 +28,7 @@ import { FieldBuilder } from "./field-builder.service.mts";
 import { ICallServiceExtension } from "./i-call-service.service.mts";
 import { Identifiers } from "./identifiers.service.mts";
 import { Printer } from "./printer.service.mts";
-import { QuickTypeExtension } from "./quicktype.service.mts";
-import { TSDoc as TSDocument } from "./tsdoc.service.mts";
+import { TSDoc } from "./tsdoc.service.mts";
 
 const DOMAINS = {
   binary_sensor: BinarySensorBuilder,
@@ -47,6 +48,12 @@ const DOMAINS = {
 };
 
 export const LIB_TYPE_BUILD = CreateLibrary({
+  configuration: {
+    PRINT_WIDTH: {
+      default: 100,
+      type: "number",
+    },
+  },
   depends: [LIB_HASS],
   name: "type_build",
   priorityInit: ["domain"],
@@ -60,8 +67,7 @@ export const LIB_TYPE_BUILD = CreateLibrary({
     fields: FieldBuilder,
     identifiers: Identifiers,
     printer: Printer,
-    quicktype: QuickTypeExtension,
-    tsdoc: TSDocument,
+    tsdoc: TSDoc,
   },
 });
 

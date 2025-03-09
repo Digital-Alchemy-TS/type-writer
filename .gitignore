@@ -3,6 +3,7 @@
 /build
 /tmp
 /backup
+/test-out
 /out-tsc
 .VSCodeCounter
 apps/**/yarn.lock
