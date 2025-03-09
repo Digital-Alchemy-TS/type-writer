@@ -28,7 +28,7 @@ import { FieldBuilder } from "./field-builder.service.mts";
 import { ICallServiceExtension } from "./i-call-service.service.mts";
 import { Identifiers } from "./identifiers.service.mts";
 import { Printer } from "./printer.service.mts";
-import { TSDoc as TSDocument } from "./tsdoc.service.mts";
+import { TSDoc } from "./tsdoc.service.mts";
 
 const DOMAINS = {
   binary_sensor: BinarySensorBuilder,
@@ -67,7 +67,7 @@ export const LIB_TYPE_BUILD = CreateLibrary({
     fields: FieldBuilder,
     identifiers: Identifiers,
     printer: Printer,
-    tsdoc: TSDocument,
+    tsdoc: TSDoc,
   },
 });
 
