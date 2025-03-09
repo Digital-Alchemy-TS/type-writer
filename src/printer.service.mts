@@ -1,3 +1,4 @@
+import { format } from "prettier";
 import {
   createPrinter,
   createSourceFile,
@@ -6,24 +7,26 @@ import {
   NewLineKind,
   ScriptKind,
   ScriptTarget,
+  Statement,
   SyntaxKind,
-  TypeNode,
 } from "typescript";
 
 export function Printer() {
   const printer = createPrinter({ newLine: NewLineKind.LineFeed });
   const resultFile = createSourceFile("", "", ScriptTarget.Latest, false, ScriptKind.TS);
 
-  return function (name: string, types: TypeNode) {
-    return printer.printNode(
+  return async function (types: Statement[]) {
+    const output = printer.printNode(
       EmitHint.Unspecified,
-      factory.createTypeAliasDeclaration(
-        [factory.createModifier(SyntaxKind.ExportKeyword)],
-        factory.createIdentifier(name),
-        undefined,
-        types,
+      factory.createModuleDeclaration(
+        [factory.createToken(SyntaxKind.DeclareKeyword)],
+        factory.createStringLiteral("@digital-alchemy/hass"),
+        factory.createModuleBlock(types),
       ),
       resultFile,
     );
+    return await format(output, {
+      parser: "typescript",
+    });
   };
 }

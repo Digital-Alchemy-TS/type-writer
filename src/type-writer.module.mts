@@ -26,7 +26,6 @@ import { FieldBuilder } from "./field-builder.service.mts";
 import { ICallServiceExtension } from "./i-call-service.service.mts";
 import { Identifiers } from "./identifiers.service.mts";
 import { Printer } from "./printer.service.mts";
-import { QuickTypeExtension } from "./quicktype.service.mts";
 import { TSDoc as TSDocument } from "./tsdoc.service.mts";
 
 const DOMAINS = {
@@ -60,7 +59,6 @@ export const LIB_TYPE_BUILD = CreateLibrary({
     fields: FieldBuilder,
     identifiers: Identifiers,
     printer: Printer,
-    quicktype: QuickTypeExtension,
     tsdoc: TSDocument,
   },
 });
