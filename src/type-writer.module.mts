@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import "@digital-alchemy/hass/dev-types";
+
 import { CreateLibrary } from "@digital-alchemy/core";
 import { LIB_HASS } from "@digital-alchemy/hass";
 

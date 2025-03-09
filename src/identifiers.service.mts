@@ -178,6 +178,7 @@ export function Identifiers({ hass, logger }: TServiceParams) {
         // ? when would an entity id be empty from inside type-writer?
         .filter(i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)));
       const list = base.filter(i => {
+        // @ts-expect-error need to add an update entity to dev-types
         // this is valid
         if (domain(i.entity_id) === "update") {
           // if there is an ID collision between an update entity any something else, do not print update entity
