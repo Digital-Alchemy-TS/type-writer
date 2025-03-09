@@ -60,7 +60,6 @@ export function BuildTypes({ logger, hass, type_build }: TServiceParams) {
         services: [
           `import "@digital-alchemy/hass";`,
           ``,
-          `import { RequireAtLeastOne, EmptyObject } from "type-fest";`,
           `import {`,
           `  AndroidNotificationData,`,
           `  AppleNotificationData,`,
@@ -72,6 +71,7 @@ export function BuildTypes({ logger, hass, type_build }: TServiceParams) {
           `  PICK_ENTITY,`,
           `  WeatherGetForecasts,`,
           `} from "@digital-alchemy/hass";`,
+          `import { RequireAtLeastOne, EmptyObject } from "type-fest";`,
           ``,
           await type_build.printer(services),
         ].join(`\n`),

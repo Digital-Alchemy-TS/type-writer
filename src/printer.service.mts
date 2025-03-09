@@ -1,3 +1,4 @@
+import { TServiceParams } from "@digital-alchemy/core";
 import { format } from "prettier";
 import {
   createPrinter,
@@ -11,7 +12,7 @@ import {
   SyntaxKind,
 } from "typescript";
 
-export function Printer() {
+export function Printer({ config }: TServiceParams) {
   const printer = createPrinter({ newLine: NewLineKind.LineFeed });
   const resultFile = createSourceFile("", "", ScriptTarget.Latest, false, ScriptKind.TS);
 
@@ -27,6 +28,7 @@ export function Printer() {
     );
     return await format(output, {
       parser: "typescript",
+      printWidth: config.type_build.PRINT_WIDTH,
     });
   };
 }

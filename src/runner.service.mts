@@ -10,7 +10,7 @@ export function Runner({ type_build, lifecycle, logger, config }: TServiceParams
         ? config.type_writer.TARGET_DIR
         : join(cwd(), config.type_writer.TARGET_DIR);
       if (existsSync(writeBase)) {
-        logger.warn(`cleanup {%s}`, writeBase);
+        logger.info(`rm -r {%s}`, writeBase);
         rmSync(writeBase, { recursive: true });
       }
       mkdirSync(writeBase);

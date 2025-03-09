@@ -2,16 +2,21 @@ import { is, TServiceParams } from "@digital-alchemy/core";
 import { domain, ENTITY_STATE, PICK_ENTITY } from "@digital-alchemy/hass";
 import { factory, SyntaxKind } from "typescript";
 
-export function Identifiers({ hass }: TServiceParams) {
+export function Identifiers({ hass, logger }: TServiceParams) {
   function uniquePlatforms() {
     return is.unique(hass.entity.registry.current.map(i => i.platform));
   }
 
   return {
+    /**
+     * mapping of area_id: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
     area() {
       return factory.createInterfaceDeclaration(
         [factory.createToken(SyntaxKind.ExportKeyword)],
-        factory.createIdentifier("HassUniqueIdMapping"),
+        factory.createIdentifier("HassAreaMapping"),
         undefined,
         undefined,
         hass.area.current.map(area =>
@@ -30,6 +35,11 @@ export function Identifiers({ hass }: TServiceParams) {
         ),
       );
     },
+    /**
+     * mapping of device id: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
     device() {
       return factory.createInterfaceDeclaration(
         [factory.createToken(SyntaxKind.ExportKeyword)],
@@ -52,6 +62,9 @@ export function Identifiers({ hass }: TServiceParams) {
         ),
       );
     },
+    /**
+     * mapping of domain: entity_id (union list)
+     */
     domains(list: ENTITY_STATE<PICK_ENTITY>[]) {
       return factory.createInterfaceDeclaration(
         [factory.createToken(SyntaxKind.ExportKeyword)],
@@ -76,6 +89,11 @@ export function Identifiers({ hass }: TServiceParams) {
           ),
       );
     },
+    /**
+     * mapping of floor_id: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
     floor() {
       return factory.createInterfaceDeclaration(
         [factory.createToken(SyntaxKind.ExportKeyword)],
@@ -98,6 +116,11 @@ export function Identifiers({ hass }: TServiceParams) {
         ),
       );
     },
+    /**
+     * mapping of label_id: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
     label() {
       return factory.createInterfaceDeclaration(
         [factory.createToken(SyntaxKind.ExportKeyword)],
@@ -120,6 +143,11 @@ export function Identifiers({ hass }: TServiceParams) {
         ),
       );
     },
+    /**
+     * mapping of platform: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
     platforms() {
       return factory.createInterfaceDeclaration(
         [factory.createToken(SyntaxKind.ExportKeyword)],
@@ -140,26 +168,60 @@ export function Identifiers({ hass }: TServiceParams) {
         ),
       );
     },
+    /**
+     * mapping of unique_id: entity_id (single)
+     */
     uniqueId() {
+      const used = new Map<string, string>();
+      const base = hass.entity.registry.current
+        // enforce has entity_id + unique id
+        // ? when would an entity id be empty from inside type-writer?
+        .filter(i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)));
+      const list = base.filter(i => {
+        // this is valid
+        if (domain(i.entity_id) === "update") {
+          // if there is an ID collision between an update entity any something else, do not print update entity
+          // hass.idBy.uniqueId implements matching logic to ignore the update entity
+          return !base.find(
+            item => item.unique_id === i.unique_id && item.entity_id !== i.entity_id,
+          );
+        }
+
+        if (used.has(i.unique_id)) {
+          // dev note: never actually seen this happen after filtering out update entities
+          // there is a matching runtime warning on the unique_id lookup if it does happen
+          logger.warn(
+            { ids: [used.get(i.unique_id), i.entity_id] },
+            `duplicate unique_id {%s}`,
+            i.unique_id,
+          );
+          return false;
+        }
+        used.set(i.unique_id, i.entity_id);
+        return true;
+      });
+
       return factory.createInterfaceDeclaration(
         [factory.createToken(SyntaxKind.ExportKeyword)],
         factory.createIdentifier("HassUniqueIdMapping"),
         undefined,
         undefined,
-        hass.entity.registry.current
-          // enforce has entity_id + unique id
-          // ? when would an entity id be empty from inside type-writer?
-          .filter(i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)))
-          .map(entity =>
-            factory.createPropertySignature(
-              undefined,
-              factory.createStringLiteral(entity.unique_id),
-              undefined,
-              factory.createLiteralTypeNode(factory.createStringLiteral(entity.entity_id)),
-            ),
+        list.map(entity =>
+          factory.createPropertySignature(
+            undefined,
+            factory.createStringLiteral(entity.unique_id),
+            undefined,
+            factory.createLiteralTypeNode(factory.createStringLiteral(entity.entity_id)),
           ),
+        ),
       );
     },
+    /**
+     * mapping of zone_id: true
+     * the true part might change if zones ever do anything useful
+     *
+     * note: keys prefixed with underscore
+     */
     zone() {
       return factory.createInterfaceDeclaration(
         [factory.createToken(SyntaxKind.ExportKeyword)],

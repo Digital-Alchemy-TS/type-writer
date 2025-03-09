@@ -46,6 +46,12 @@ const DOMAINS = {
 };
 
 export const LIB_TYPE_BUILD = CreateLibrary({
+  configuration: {
+    PRINT_WIDTH: {
+      default: 100,
+      type: "number",
+    },
+  },
   depends: [LIB_HASS],
   name: "type_build",
   priorityInit: ["domain"],
