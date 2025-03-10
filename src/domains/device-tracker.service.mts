@@ -6,7 +6,7 @@ export function DeviceTrackerBuilder({ type_build }: TServiceParams) {
   type_build.domain.register<"device_tracker">({
     async attributes(data) {
       return type_build.ast.attributes({
-        data: data.attributes,
+        data: data.attributes as object,
         literal: ["source_type"],
       });
     },

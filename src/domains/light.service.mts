@@ -11,7 +11,7 @@ export function LightBuilder({ type_build }: TServiceParams) {
       >;
 
       return type_build.ast.attributes({
-        data: data.attributes,
+        data: data.attributes as object,
         override: {
           brightness: factory.createKeywordTypeNode(SyntaxKind.NumberKeyword),
           color_mode: type_build.ast.union(attributes.supported_color_modes ?? []),

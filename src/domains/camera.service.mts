@@ -6,7 +6,7 @@ export function CameraBuilder({ type_build }: TServiceParams) {
   type_build.domain.register<"camera">({
     async attributes(data) {
       return type_build.ast.attributes({
-        data: data.attributes,
+        data: data.attributes as object,
         literal: ["frontend_stream_type"],
       });
     },
