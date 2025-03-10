@@ -2,7 +2,7 @@ import { each, is, TServiceParams } from "@digital-alchemy/core";
 import { ALL_DOMAINS, ANY_ENTITY, domain, ENTITY_STATE } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeElement, TypeNode } from "typescript";
 
-export function DomainBuilder({ hass, type_build, logger }: TServiceParams) {
+export function DomainBuilder({ hass, logger }: TServiceParams) {
   async function buildEntityDomain(entity_id: ANY_ENTITY) {
     const entity = hass.entity.getCurrentState(entity_id);
 
@@ -18,13 +18,6 @@ export function DomainBuilder({ hass, type_build, logger }: TServiceParams) {
         builder.state
           ? builder.state(entity)
           : factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
-      ),
-      // * entity_id
-      factory.createPropertySignature(
-        undefined,
-        factory.createIdentifier("entity_id"),
-        undefined,
-        factory.createLiteralTypeNode(factory.createStringLiteral(entity_id)),
       ),
       // * attributes
       factory.createPropertySignature(
@@ -63,7 +56,13 @@ export function DomainBuilder({ hass, type_build, logger }: TServiceParams) {
       });
       const out = [] as TypeElement[];
       await each(entities, async domain => out.push(await buildEntityDomain(domain)));
-      return type_build.printer("ENTITY_SETUP", factory.createTypeLiteralNode(out));
+      return factory.createInterfaceDeclaration(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createIdentifier("HassEntitySetupMapping"),
+        undefined,
+        undefined,
+        out,
+      );
     },
     register<DOMAIN extends ALL_DOMAINS>(options: DomainBuilderOptions<DOMAIN>) {
       const domain = options.domain;

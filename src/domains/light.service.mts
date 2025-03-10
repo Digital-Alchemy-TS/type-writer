@@ -11,7 +11,7 @@ export function LightBuilder({ type_build }: TServiceParams) {
       >;
 
       return type_build.ast.attributes({
-        data: data.attributes,
+        data: data.attributes as object,
         override: {
           brightness: factory.createKeywordTypeNode(SyntaxKind.NumberKeyword),
           color_mode: type_build.ast.union(attributes.supported_color_modes ?? []),
@@ -19,7 +19,10 @@ export function LightBuilder({ type_build }: TServiceParams) {
           color_temp_kelvin: factory.createKeywordTypeNode(SyntaxKind.NumberKeyword),
           effect: is.empty(attributes.effect_list)
             ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
-            : type_build.ast.union(attributes.effect_list ?? []),
+            : type_build.ast.union(is.unique(attributes.effect_list ?? [])),
+          effect_list: is.empty(attributes.effect_list)
+            ? factory.createKeywordTypeNode(SyntaxKind.NeverKeyword)
+            : type_build.ast.union(is.unique(attributes.effect_list ?? [])),
           hs_color: type_build.ast.tuple([..."hs"]),
           rgb_color: type_build.ast.tuple([..."rgb"]),
           rgbw_color: type_build.ast.tuple([..."rgbw"]),

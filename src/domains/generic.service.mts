@@ -6,7 +6,7 @@ export function GenericDomainBuilder({ type_build }: TServiceParams) {
   type_build.domain.register({
     async attributes(data) {
       return type_build.ast.attributes({
-        data: data.attributes,
+        data: data.attributes as object,
       });
     },
     // @ts-expect-error because I made it up

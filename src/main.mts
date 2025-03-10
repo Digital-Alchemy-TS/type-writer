@@ -7,8 +7,9 @@ import { LIB_TYPE_BUILD } from "./type-writer.module.mts";
 
 const TYPE_WRITER = CreateApplication({
   configuration: {
-    TARGET_FILE: {
-      description: "Define a file to write types to. Autodetect = default behavior",
+    TARGET_DIR: {
+      default: "src/hass",
+      description: "Define a base folder to write types to",
       type: "string",
     },
   },

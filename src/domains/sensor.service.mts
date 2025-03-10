@@ -5,7 +5,7 @@ import { factory, SyntaxKind } from "typescript";
 export function SensorBuilder({ type_build }: TServiceParams) {
   type_build.domain.register<"sensor">({
     async attributes(data) {
-      return type_build.ast.attributes({ data: data.attributes });
+      return type_build.ast.attributes({ data: data.attributes as object });
     },
     domain: "sensor",
     state(data) {

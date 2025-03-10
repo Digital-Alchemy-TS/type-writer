@@ -1,4 +1,5 @@
-import { TServiceParams } from "@digital-alchemy/core";
+import { is, TServiceParams } from "@digital-alchemy/core";
+import { factory, SyntaxKind } from "typescript";
 
 export function ClimateBuilder({ type_build }: TServiceParams) {
   // @ts-expect-error ignore
@@ -6,7 +7,7 @@ export function ClimateBuilder({ type_build }: TServiceParams) {
     async attributes(data) {
       const attributes = data.attributes as object as ClimateAttributes;
       return type_build.ast.attributes({
-        data: data.attributes,
+        data: attributes,
         override: {
           fan: type_build.ast.union(["on", "off"]),
           fan_mode: type_build.ast.union(attributes.fan_modes ?? []),
@@ -17,6 +18,9 @@ export function ClimateBuilder({ type_build }: TServiceParams) {
     domain: "climate",
     state(data) {
       const attributes = data.attributes as object as ClimateAttributes;
+      if (is.empty(attributes.hvac_modes)) {
+        return factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
+      }
       return type_build.ast.union(attributes.hvac_modes);
     },
   });

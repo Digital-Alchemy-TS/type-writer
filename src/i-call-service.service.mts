@@ -1,9 +1,11 @@
 import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
 import { HassServiceDTO, ServiceListField, ServiceListServiceTarget } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeElement, TypeNode, TypeParameterDeclaration } from "typescript";
+import { inspect } from "util";
 
 export async function ICallServiceExtension({ hass, type_build }: TServiceParams) {
   return async function () {
+    inspect.defaultOptions.depth = 1000;
     const domains = await hass.fetch.listServices();
     const sortedDomains = domains.toSorted((a, b) => a.domain.localeCompare(b.domain));
 
@@ -38,14 +40,23 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
           factory.createIdentifier("service_data"),
           everythingIsOptional ? factory.createToken(SyntaxKind.QuestionToken) : undefined,
           factory.createIntersectionTypeNode([
-            factory.createTypeLiteralNode(
-              Object.entries(value.fields)
-                .sort(([a], [b]) => (a > b ? UP : DOWN))
-                .map(([service, details]) =>
-                  type_build.fields.fieldPropertySignature(service, details, domain, key),
-                )
-                .filter(i => !is.undefined(i)) as TypeElement[],
-            ),
+            ...(is.empty(value.fields) && !is.empty(targets)
+              ? []
+              : [
+                  is.empty(value.fields)
+                    ? factory.createTypeReferenceNode(
+                        factory.createIdentifier("EmptyObject"),
+                        undefined,
+                      )
+                    : factory.createTypeLiteralNode(
+                        Object.entries(value.fields)
+                          .sort(([a], [b]) => (a > b ? UP : DOWN))
+                          .map(([service, details]) =>
+                            type_build.fields.fieldPropertySignature(service, details, domain, key),
+                          )
+                          .filter(i => !is.undefined(i)) as TypeElement[],
+                      ),
+                ]),
             ...(is.empty(targets)
               ? []
               : [
@@ -149,6 +160,7 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
       // >   }
       // > }
 
+      inspect.defaultOptions.depth = 100;
       const sortedServices = Object.entries(services).sort(([a], [b]) => (a > b ? UP : DOWN));
       return type_build.tsdoc.domainMarker(
         factory.createPropertySignature(
@@ -170,9 +182,12 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
     // >     [service_name]: (service_data) => Promise<void | unknown>
     // >   }
     // > }
-    return type_build.printer(
-      "iCallService",
-      factory.createTypeLiteralNode(sortedDomains.map(domain => buildDomain(domain))),
+    return factory.createInterfaceDeclaration(
+      [factory.createToken(SyntaxKind.ExportKeyword)],
+      factory.createIdentifier("iCallService"),
+      undefined,
+      undefined,
+      sortedDomains.map(domain => buildDomain(domain)),
     );
   };
 }
