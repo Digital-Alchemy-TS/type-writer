@@ -31,26 +31,27 @@ import { Printer } from "./printer.service.mts";
 import { TSDoc } from "./tsdoc.service.mts";
 
 const DOMAINS = {
-  binary_sensor: BinarySensorBuilder,
-  camera: CameraBuilder,
-  climate: ClimateBuilder,
-  device_tracker: DeviceTrackerBuilder,
-  event: EventBuilder,
-  fan: FanBuilder,
-  generic: GenericDomainBuilder,
-  light: LightBuilder,
-  number: NumberBuilder,
-  select: SelectBuilder,
-  sensor: SensorBuilder,
-  switch: SwitchBuilder,
-  update: UpdateBuilder,
-  weather: WeatherBuilder,
+  BinarySensorBuilder,
+  CameraBuilder,
+  ClimateBuilder,
+  DeviceTrackerBuilder,
+  EventBuilder,
+  FanBuilder,
+  GenericDomainBuilder,
+  LightBuilder,
+  NumberBuilder,
+  SelectBuilder,
+  SensorBuilder,
+  SwitchBuilder,
+  UpdateBuilder,
+  WeatherBuilder,
 };
 
 export const LIB_TYPE_BUILD = CreateLibrary({
   configuration: {
     PRINT_WIDTH: {
       default: 100,
+      description: "Prettier printWidth setting applied to output",
       type: "number",
     },
   },
