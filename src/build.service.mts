@@ -32,27 +32,22 @@ export function BuildTypes({ logger, hass, type_build }: TServiceParams) {
   return async function doBuild() {
     try {
       const entities = await hass.fetch.getAllEntities();
-      const services = await buildServices();
-      const registry = await buildRegistry();
-      const mappings = buildMappings(entities);
+      const services = await type_build.printer(await buildServices());
+      const registry = await type_build.printer(await buildRegistry());
+      const mappings = await type_build.printer(buildMappings(entities));
 
       return {
         /**
          * Mappings file contains thing (area, label, etc) -> entity list
          */
-        mappings: [
-          // ! do not remove, required for declaration merges
-          `import "@digital-alchemy/hass";`,
-          ``,
-          await type_build.printer(mappings),
-        ].join(`\n`),
+        mappings: [`import "@digital-alchemy/hass";`, ``, mappings].join(`\n`),
         /**
          * Bind state & attribute data to entities
          */
         registry: [
           `import { DynamicMergeAttributes } from "@digital-alchemy/hass";`,
           ``,
-          await type_build.printer(registry),
+          registry,
         ].join(`\n`),
         /**
          * Bind services to hass.call & entity proxies
@@ -63,17 +58,17 @@ export function BuildTypes({ logger, hass, type_build }: TServiceParams) {
           `import {`,
           `  AndroidNotificationData,`,
           `  AppleNotificationData,`,
-          `  TDeviceId,`,
-          `  TLabelId,`,
-          `  TAreaId,`,
-          `  PICK_FROM_PLATFORM,`,
           `  NotificationData,`,
           `  PICK_ENTITY,`,
+          ...(services.includes("PICK_FROM_PLATFORM") ? [`  PICK_FROM_PLATFORM,`] : []),
+          `  TAreaId,`,
+          `  TDeviceId,`,
+          `  TLabelId,`,
           `  WeatherGetForecasts,`,
           `} from "@digital-alchemy/hass";`,
-          `import { RequireAtLeastOne, EmptyObject } from "type-fest";`,
+          `import { EmptyObject, RequireAtLeastOne } from "type-fest";`,
           ``,
-          await type_build.printer(services),
+          services,
         ].join(`\n`),
       };
     } catch (error) {

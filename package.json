@@ -47,8 +47,8 @@
     "@eslint/js": "^9.22.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.13.10",
-    "@typescript-eslint/eslint-plugin": "8.26.0",
-    "@typescript-eslint/parser": "8.26.0",
+    "@typescript-eslint/eslint-plugin": "8.26.1",
+    "@typescript-eslint/parser": "8.26.1",
     "eslint": "9.22.0",
     "eslint-config-prettier": "10.1.1",
     "eslint-plugin-import": "^2.31.0",
@@ -62,5 +62,8 @@
     "eslint-plugin-unicorn": "^57.0.0",
     "tsx": "^4.19.3"
   },
-  "packageManager": "yarn@4.7.0"
+  "packageManager": "yarn@4.7.0",
+  "resolutions": {
+    "@digital-alchemy/hass": "portal:/home/zoe/DigitalAlchemyTS/hass"
+  }
 }
