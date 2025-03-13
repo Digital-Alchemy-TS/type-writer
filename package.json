@@ -62,8 +62,5 @@
     "eslint-plugin-unicorn": "^57.0.0",
     "tsx": "^4.19.3"
   },
-  "packageManager": "yarn@4.7.0",
-  "resolutions": {
-    "@digital-alchemy/hass": "portal:/home/zoe/DigitalAlchemyTS/hass"
-  }
+  "packageManager": "yarn@4.7.0"
 }
