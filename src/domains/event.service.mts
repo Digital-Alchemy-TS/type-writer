@@ -7,7 +7,7 @@ export function EventBuilder({ type_build }: TServiceParams) {
     async attributes(data) {
       const attributes = data.attributes as object as { event_types: string[] };
       return type_build.ast.attributes({
-        data: data.attributes as object,
+        data: data.attributes,
         override: {
           event_type: type_build.ast.union(attributes.event_types ?? []),
         },

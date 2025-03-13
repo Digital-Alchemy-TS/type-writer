@@ -6,7 +6,7 @@ export function UpdateBuilder({ type_build }: TServiceParams) {
   type_build.domain.register<"update">({
     async attributes(data) {
       return type_build.ast.attributes({
-        data: data.attributes as object,
+        data: data.attributes,
         literal: ["installed_version", "latest_version", "title"],
       });
     },

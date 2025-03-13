@@ -6,7 +6,7 @@ export function WeatherBuilder({ type_build }: TServiceParams) {
   type_build.domain.register<"weather">({
     async attributes(data) {
       return type_build.ast.attributes({
-        data: data.attributes as object,
+        data: data.attributes,
         literal: [
           "temperature_unit",
           "pressure_unit",

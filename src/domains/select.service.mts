@@ -6,7 +6,7 @@ export function SelectBuilder({ type_build }: TServiceParams) {
   type_build.domain.register<"select">({
     async attributes(data) {
       return type_build.ast.attributes({
-        data: data.attributes as object,
+        data: data.attributes,
       });
     },
     domain: "select",
