@@ -14,10 +14,18 @@ type TargetReference = {
   platform?: TPlatformId;
 };
 
-export function EntityReference({ logger }: TServiceParams) {
+export function EntityReference({ logger, hass }: TServiceParams) {
   function buildTargetReference(data: TargetReference) {
     if (!is.empty(data.platform)) {
       if (!is.empty(data.domain)) {
+        if (is.empty(hass.idBy.platform(data.platform, ...data.domain))) {
+          return factory.createParenthesizedType(
+            factory.createUnionTypeNode([
+              factory.createKeywordTypeNode(SyntaxKind.NeverKeyword),
+              factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.NeverKeyword)),
+            ]),
+          );
+        }
         // * PICK_FROM_PLATFORM<"platform", ..."domain"> | PICK_FROM_PLATFORM<"platform", ..."domain">[]
         return factory.createParenthesizedType(
           factory.createUnionTypeNode([
@@ -39,6 +47,14 @@ export function EntityReference({ logger }: TServiceParams) {
         );
       }
       // * PICK_FROM_PLATFORM<"platform"> | PICK_FROM_PLATFORM<"platform">[]
+      if (is.empty(hass.idBy.platform(data.platform))) {
+        return factory.createParenthesizedType(
+          factory.createUnionTypeNode([
+            factory.createKeywordTypeNode(SyntaxKind.NeverKeyword),
+            factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.NeverKeyword)),
+          ]),
+        );
+      }
       return factory.createParenthesizedType(
         factory.createUnionTypeNode([
           factory.createTypeReferenceNode(factory.createIdentifier("PICK_FROM_PLATFORM"), [
@@ -53,6 +69,14 @@ export function EntityReference({ logger }: TServiceParams) {
       );
     }
     // * PICK_ENTITY<..."domain"> | PICK_ENTITY<..."domain">[]
+    if (!is.empty(data?.domain?.[FIRST]) && is.empty(hass.idBy.domain(data.domain[FIRST]))) {
+      return factory.createParenthesizedType(
+        factory.createUnionTypeNode([
+          factory.createKeywordTypeNode(SyntaxKind.NeverKeyword),
+          factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.NeverKeyword)),
+        ]),
+      );
+    }
     return factory.createParenthesizedType(
       factory.createUnionTypeNode([
         factory.createTypeReferenceNode(
