@@ -1,202 +1,242 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
 import { domain, ENTITY_STATE, PICK_ENTITY } from "@digital-alchemy/hass";
-import { factory, PropertySignature, SyntaxKind } from "typescript";
+import { factory, SyntaxKind } from "typescript";
 
-export function Identifiers({ hass, type_build }: TServiceParams) {
-  function registryType(type: string, value: PropertySignature[]) {
-    return factory.createPropertySignature(
-      undefined,
-      factory.createIdentifier(type),
-      undefined,
-      factory.createTypeLiteralNode(value),
-    );
-  }
-
-  function entityUnion(list: PICK_ENTITY[]) {
-    if (is.empty(list)) {
-      return factory.createKeywordTypeNode(SyntaxKind.NeverKeyword);
-    }
-    return factory.createUnionTypeNode(
-      list.map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i))),
-    );
-  }
-
+export function Identifiers({ hass, logger }: TServiceParams) {
   function uniquePlatforms() {
     return is.unique(hass.entity.registry.current.map(i => i.platform));
   }
 
-  function itemObject(name: string, entities: PICK_ENTITY[]) {
-    return factory.createPropertySignature(
-      undefined,
-      factory.createIdentifier(name),
-      undefined,
-      entityUnion(entities),
-    );
-  }
-
-  function RegistryDetails() {
-    return type_build.printer(
-      "REGISTRY_SETUP",
-      factory.createTypeLiteralNode([
-        registryType(
-          "area",
-          hass.area.current.map(({ area_id }) =>
-            itemObject(`_${area_id}`, hass.idBy.area(area_id)),
-          ),
-        ),
-        registryType(
-          "platform",
-          uniquePlatforms().map(platform =>
-            itemObject(`_${platform}`, hass.idBy.platform(platform)),
-          ),
-        ),
-        registryType(
-          "label",
-          hass.label.current.map(({ label_id }) =>
-            itemObject(`_${label_id}`, hass.idBy.label(label_id)),
-          ),
-        ),
-        registryType(
-          "floor",
-          hass.floor.current.map(({ floor_id }) =>
-            itemObject(`_${floor_id}`, hass.idBy.floor(floor_id)),
-          ),
-        ),
-        registryType(
-          "device",
-          hass.device.current.map(({ id }) => itemObject(`_${id}`, hass.idBy.device(id))),
-        ),
-      ]),
-    );
-  }
-
   return {
+    /**
+     * mapping of area_id: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
     area() {
-      return type_build.printer(
-        "TAreaId",
-        is.empty(hass.area.current)
-          ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
-          : factory.createUnionTypeNode(
-              hass.area.current.map(i =>
-                factory.createLiteralTypeNode(factory.createStringLiteral(i.area_id)),
-              ),
-            ),
-      );
-    },
-    device() {
-      return type_build.printer(
-        "TDeviceId",
-        is.empty(hass.device.current)
-          ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
-          : factory.createUnionTypeNode(
-              hass.device.current.map(i =>
-                factory.createLiteralTypeNode(factory.createStringLiteral(i.id)),
-              ),
-            ),
-      );
-    },
-    domains(list: ENTITY_STATE<PICK_ENTITY>[]) {
-      return type_build.printer(
-        "TRawDomains",
-        factory.createUnionTypeNode(
-          is
-            .unique(list.map(i => domain(i.entity_id)))
-            .map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i))),
-        ),
-      );
-    },
-    entityIds(list: ENTITY_STATE<PICK_ENTITY>[]) {
-      return type_build.printer(
-        "TRawEntityIds",
-        factory.createUnionTypeNode(
-          list.map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i.entity_id))),
-        ),
-      );
-    },
-    floor() {
-      return type_build.printer(
-        "TFloorId",
-        is.empty(hass.floor.current)
-          ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
-          : factory.createUnionTypeNode(
-              hass.floor.current.map(i =>
-                factory.createLiteralTypeNode(factory.createStringLiteral(i.floor_id)),
-              ),
-            ),
-      );
-    },
-    label() {
-      return type_build.printer(
-        "TLabelId",
-        is.empty(hass.label.current)
-          ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
-          : factory.createUnionTypeNode(
-              hass.label.current.map(i =>
-                factory.createLiteralTypeNode(factory.createStringLiteral(i.label_id)),
-              ),
-            ),
-      );
-    },
-    platforms() {
-      return type_build.printer(
-        "TPlatformId",
-        factory.createUnionTypeNode(
-          uniquePlatforms().map(i => factory.createLiteralTypeNode(factory.createStringLiteral(i))),
-        ),
-      );
-    },
-    registryDetails: RegistryDetails,
-    uniqueId() {
-      return type_build.printer(
-        "TUniqueID",
-        factory.createUnionTypeNode(
-          hass.entity.registry.current
-            .filter(
-              i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)),
-            )
-            .map(item =>
-              factory.createLiteralTypeNode(
-                is.number(item.unique_id)
-                  ? factory.createNumericLiteral(String(item.unique_id))
-                  : factory.createStringLiteral(item.unique_id),
-              ),
-            ),
-        ),
-      );
-    },
-    uniqueIdMapping() {
-      return type_build.printer(
-        "TUniqueIDMapping",
-        factory.createTypeLiteralNode(
-          hass.entity.registry.current
-            .filter(
-              i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)),
-            )
-            .map(item =>
-              factory.createPropertySignature(
-                undefined,
-                factory.createStringLiteral(item.entity_id),
-                undefined,
-                factory.createLiteralTypeNode(
-                  is.number(item.unique_id)
-                    ? factory.createNumericLiteral(String(item.unique_id))
-                    : factory.createStringLiteral(item.unique_id),
+      return factory.createInterfaceDeclaration(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createIdentifier("HassAreaMapping"),
+        undefined,
+        undefined,
+        hass.area.current.map(area =>
+          factory.createPropertySignature(
+            undefined,
+            factory.createStringLiteral(`_${area.area_id}`),
+            undefined,
+            is.empty(hass.idBy.area(area.area_id))
+              ? factory.createKeywordTypeNode(SyntaxKind.NeverKeyword)
+              : factory.createUnionTypeNode(
+                  hass.idBy
+                    .area(area.area_id)
+                    .map(id => factory.createLiteralTypeNode(factory.createStringLiteral(id))),
                 ),
-              ),
-            ),
+          ),
         ),
       );
     },
-    zone() {
-      return type_build.printer(
-        "TZoneId",
-        is.empty(hass.zone.current)
-          ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
-          : factory.createUnionTypeNode(
-              hass.zone.current.map(i =>
-                factory.createLiteralTypeNode(factory.createStringLiteral(i.id)),
+    /**
+     * mapping of device id: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
+    device() {
+      return factory.createInterfaceDeclaration(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createIdentifier("HassDeviceMapping"),
+        undefined,
+        undefined,
+        hass.device.current.map(device =>
+          factory.createPropertySignature(
+            undefined,
+            factory.createStringLiteral(`_${device.id}`),
+            undefined,
+            is.empty(hass.idBy.device(device.id))
+              ? factory.createKeywordTypeNode(SyntaxKind.NeverKeyword)
+              : factory.createUnionTypeNode(
+                  hass.idBy
+                    .device(device.id)
+                    .map(id => factory.createLiteralTypeNode(factory.createStringLiteral(id))),
+                ),
+          ),
+        ),
+      );
+    },
+    /**
+     * mapping of domain: entity_id (union list)
+     */
+    domains(list: ENTITY_STATE<PICK_ENTITY>[]) {
+      return factory.createInterfaceDeclaration(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createIdentifier("HassDomainMapping"),
+        undefined,
+        undefined,
+        is
+          .unique(list.map(i => domain(i.entity_id)))
+          .map(name =>
+            factory.createPropertySignature(
+              undefined,
+              factory.createStringLiteral(name),
+              undefined,
+              factory.createUnionTypeNode(
+                list
+                  .filter(i => domain(i) === name)
+                  .map(entity =>
+                    factory.createLiteralTypeNode(factory.createStringLiteral(entity.entity_id)),
+                  ),
               ),
             ),
+          ),
+      );
+    },
+    /**
+     * mapping of floor_id: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
+    floor() {
+      return factory.createInterfaceDeclaration(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createIdentifier("HassFloorMapping"),
+        undefined,
+        undefined,
+        hass.floor.current.map(floor =>
+          factory.createPropertySignature(
+            undefined,
+            factory.createStringLiteral(`_${floor.floor_id}`),
+            undefined,
+            is.empty(hass.idBy.floor(floor.floor_id))
+              ? factory.createKeywordTypeNode(SyntaxKind.NeverKeyword)
+              : factory.createUnionTypeNode(
+                  hass.idBy
+                    .floor(floor.floor_id)
+                    .map(id => factory.createLiteralTypeNode(factory.createStringLiteral(id))),
+                ),
+          ),
+        ),
+      );
+    },
+    /**
+     * mapping of label_id: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
+    label() {
+      return factory.createInterfaceDeclaration(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createIdentifier("HassLabelMapping"),
+        undefined,
+        undefined,
+        hass.label.current.map(label =>
+          factory.createPropertySignature(
+            undefined,
+            factory.createStringLiteral(`_${label.label_id}`),
+            undefined,
+            is.empty(hass.idBy.label(label.label_id))
+              ? factory.createKeywordTypeNode(SyntaxKind.NeverKeyword)
+              : factory.createUnionTypeNode(
+                  hass.idBy
+                    .label(label.label_id)
+                    .map(id => factory.createLiteralTypeNode(factory.createStringLiteral(id))),
+                ),
+          ),
+        ),
+      );
+    },
+    /**
+     * mapping of platform: entity_id (union list)
+     *
+     * note: keys prefixed with underscore
+     */
+    platforms() {
+      return factory.createInterfaceDeclaration(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createIdentifier("HassPlatformMapping"),
+        undefined,
+        undefined,
+        uniquePlatforms().map(platform =>
+          factory.createPropertySignature(
+            undefined,
+            factory.createStringLiteral(`_${platform}`),
+            undefined,
+            factory.createUnionTypeNode(
+              hass.idBy
+                .platform(platform)
+                .map(id => factory.createLiteralTypeNode(factory.createStringLiteral(id))),
+            ),
+          ),
+        ),
+      );
+    },
+    /**
+     * mapping of unique_id: entity_id (single)
+     */
+    uniqueId() {
+      const used = new Map<string, string>();
+      const base = hass.entity.registry.current
+        // enforce has entity_id + unique id
+        // ? when would an entity id be empty from inside type-writer?
+        .filter(i => !is.empty(i.entity_id) && (is.number(i.unique_id) || !is.empty(i.unique_id)));
+      const list = base.filter(i => {
+        // @ts-expect-error need to add an update entity to dev-types
+        // this is valid
+        if (domain(i.entity_id) === "update") {
+          // if there is an ID collision between an update entity any something else, do not print update entity
+          // hass.idBy.uniqueId implements matching logic to ignore the update entity
+          return !base.find(
+            item => item.unique_id === i.unique_id && item.entity_id !== i.entity_id,
+          );
+        }
+
+        if (used.has(i.unique_id)) {
+          // dev note: never actually seen this happen after filtering out update entities
+          // there is a matching runtime warning on the unique_id lookup if it does happen
+          logger.warn(
+            { ids: [used.get(i.unique_id), i.entity_id] },
+            `duplicate unique_id {%s}`,
+            i.unique_id,
+          );
+          return false;
+        }
+        used.set(i.unique_id, i.entity_id);
+        return true;
+      });
+
+      return factory.createInterfaceDeclaration(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createIdentifier("HassUniqueIdMapping"),
+        undefined,
+        undefined,
+        list.map(entity =>
+          factory.createPropertySignature(
+            undefined,
+            factory.createStringLiteral(entity.unique_id),
+            undefined,
+            factory.createLiteralTypeNode(factory.createStringLiteral(entity.entity_id)),
+          ),
+        ),
+      );
+    },
+    /**
+     * mapping of zone_id: true
+     * the true part might change if zones ever do anything useful
+     *
+     * note: keys prefixed with underscore
+     */
+    zone() {
+      return factory.createInterfaceDeclaration(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createIdentifier("HassZoneMapping"),
+        undefined,
+        undefined,
+        hass.zone.current.map(zone =>
+          factory.createPropertySignature(
+            undefined,
+            factory.createStringLiteral(`_${zone.id}`),
+            undefined,
+            factory.createLiteralTypeNode(factory.createTrue()),
+          ),
+        ),
       );
     },
   };
