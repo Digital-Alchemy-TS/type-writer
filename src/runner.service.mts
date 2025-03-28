@@ -8,6 +8,12 @@ const HEADER = [
   "// Changes will not be preserved if you run the command again",
   "",
 ].join("\n");
+const REGISTRY_HEADER = [
+  HEADER,
+  `// Missing attributes?`,
+  `// https://docs.digital-alchemy.app/docs/home-automation/type-writer/custom-attributes`,
+  "",
+].join("\n");
 
 export function Runner({ type_build, lifecycle, logger, config }: TServiceParams) {
   async function runner() {
@@ -26,7 +32,7 @@ export function Runner({ type_build, lifecycle, logger, config }: TServiceParams
       if (!is.empty(writeBase)) {
         writeFileSync(join(writeBase, `mappings.mts`), HEADER + mappings, "utf8");
         writeFileSync(join(writeBase, `services.mts`), HEADER + services, "utf8");
-        writeFileSync(join(writeBase, `registry.mts`), HEADER + registry, "utf8");
+        writeFileSync(join(writeBase, `registry.mts`), REGISTRY_HEADER + registry, "utf8");
       }
       logger.warn({ base: writeBase }, `successfully wrote type definitions file`);
       logger.info(`{reload your editor to update types}`);
