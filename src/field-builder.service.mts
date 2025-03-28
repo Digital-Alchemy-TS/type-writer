@@ -1,5 +1,5 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
-import { ServiceListFieldDescription } from "@digital-alchemy/hass";
+import { ServiceListFieldDescription, ServiceListSelector } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeNode } from "typescript";
 
 export function FieldBuilder({ type_build }: TServiceParams) {
@@ -49,7 +49,73 @@ export function FieldBuilder({ type_build }: TServiceParams) {
     ]);
   }
 
+  /**
+   * Object selectors are a bit of a catchall for a variety of odd things
+   *
+   * dev note: it may be better to pull in quicktype as a next step, instead of further patching this logic
+   * this seems like it could be anything, only going to account for some basics here
+   */
+  function objectSelector(
+    serviceName: string,
+    parameterName: string,
+    serviceDomain: string,
+    selector: ServiceListSelector,
+    details: ServiceListFieldDescription,
+  ) {
+    // using the default value to infer a type
+    if (!is.undefined(details.default)) {
+      // example: [ 'grafana', 'Configurator', 'core_mariadb' ]
+      if (is.array(details.default)) {
+        const isStringArray = details.default.every(i => is.string(i));
+        return isStringArray
+          ? factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.StringKeyword))
+          : factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword));
+      }
+
+      // example: { addons: [ 'MariaDB' ], folders: [ 'Local add-ons', 'share' ] }
+      if (is.object(details.default)) {
+        return factory.createTypeLiteralNode(
+          Object.entries(details.default).map(([key, value]) => {
+            let type: TypeNode;
+            if (is.array(value)) {
+              const isStringArray = value.every(i => is.string(i));
+              type = isStringArray
+                ? factory.createArrayTypeNode(
+                    factory.createKeywordTypeNode(SyntaxKind.StringKeyword),
+                  )
+                : factory.createArrayTypeNode(
+                    factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
+                  );
+            } else if (is.string(value)) {
+              type = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
+            } else if (is.number(value)) {
+              type = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
+            } else if (is.boolean(value)) {
+              type = factory.createKeywordTypeNode(SyntaxKind.BooleanKeyword);
+            } else {
+              type = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
+            }
+            return factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier(key),
+              undefined,
+              type,
+            );
+          }),
+        );
+      }
+    }
+
+    return handleSelectors(parameterName, serviceDomain, serviceName, {
+      selector,
+      ...details,
+    });
+  }
+
   // #MARK: fieldPropertySignature
+  /**
+   * Used to determine the type for individual named function params.
+   */
   function fieldPropertySignature(
     parameterName: string,
     { selector, ...details }: ServiceListFieldDescription,
@@ -71,23 +137,33 @@ export function FieldBuilder({ type_build }: TServiceParams) {
       // some combination of: PICK_ENTITY | PICK_ENTITY[] | PICK_ENTITY<"domain"> | PICK_ENTITY<"domain">[]
       node = type_build.entity.buildEntityReference(selector);
     // : "option" | "option" | "option" | "option"
-    else if (!is.undefined(selector?.select))
-      node = factory.createUnionTypeNode(
-        selector?.select.options.map((i: string | Record<"label" | "value", string>) =>
-          factory.createLiteralTypeNode(factory.createStringLiteral(is.string(i) ? i : i.value)),
-        ),
-      );
-    // : Record<string, unknown> | (unknown[]);
-    else if (is.undefined(selector?.object)) {
-      node = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
+    else if (!is.undefined(selector?.select)) {
+      node = is.empty(selector?.select.options)
+        ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
+        : factory.createUnionTypeNode(
+            selector?.select.options.map((i: string | Record<"label" | "value", string>) =>
+              factory.createLiteralTypeNode(
+                factory.createStringLiteral(is.string(i) ? i : i.value),
+              ),
+            ),
+          );
+      if (selector?.select?.custom_value && !is.empty(selector?.select.options)) {
+        node = factory.createTypeReferenceNode(factory.createIdentifier("LiteralUnion"), [
+          node,
+          factory.createKeywordTypeNode(SyntaxKind.StringKeyword),
+        ]);
+      }
+      if (selector?.select?.multiple) {
+        node = factory.createArrayTypeNode(node);
+      }
     }
+    // : Record<string, unknown> | (unknown[]);
+    else if (is.undefined(selector?.object))
+      node = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
     // else if (!is.undefined(selector?.))
     // : unknown
     else {
-      node = handleSelectors(parameterName, serviceDomain, serviceName, {
-        selector,
-        ...details,
-      });
+      node = objectSelector(serviceName, parameterName, serviceDomain, selector, details);
     }
 
     return type_build.tsdoc.parameterComment(

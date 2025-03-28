@@ -66,7 +66,7 @@ export function BuildTypes({ logger, hass, type_build }: TServiceParams) {
           `  TLabelId,`,
           `  WeatherGetForecasts,`,
           `} from "@digital-alchemy/hass";`,
-          `import { EmptyObject, RequireAtLeastOne } from "type-fest";`,
+          `import { EmptyObject, LiteralUnion, RequireAtLeastOne } from "type-fest";`,
           ``,
           services,
         ].join(`\n`),
