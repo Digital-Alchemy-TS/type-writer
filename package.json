@@ -39,7 +39,7 @@
     "@digital-alchemy/hass": "*"
   },
   "devDependencies": {
-    "@cspell/eslint-plugin": "^8.18.0",
+    "@cspell/eslint-plugin": "^8.18.1",
     "@digital-alchemy/core": "^25.2.2",
     "@digital-alchemy/hass": "^25.3.2",
     "@eslint/compat": "^1.2.7",
