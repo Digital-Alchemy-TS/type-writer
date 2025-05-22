@@ -3,7 +3,7 @@
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
   "homepage": "https://docs.digital-alchemy.app/Type-Writer",
-  "version": "25.3.2",
+  "version": "25.5.1",
   "scripts": {
     "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
@@ -39,14 +39,14 @@
     "@digital-alchemy/hass": "*"
   },
   "devDependencies": {
-    "@cspell/eslint-plugin": "^9.0.1",
-    "@digital-alchemy/core": "^25.2.2",
+    "@cspell/eslint-plugin": "^9.0.2",
+    "@digital-alchemy/core": "^25.5.1",
     "@digital-alchemy/hass": "^25.5.1",
     "@eslint/compat": "^1.2.9",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.27.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.15.19",
+    "@types/node": "^22.15.21",
     "@typescript-eslint/eslint-plugin": "8.32.1",
     "@typescript-eslint/parser": "8.32.1",
     "eslint": "9.27.0",
@@ -62,5 +62,5 @@
     "eslint-plugin-unicorn": "^59.0.1",
     "tsx": "^4.19.4"
   },
-  "packageManager": "yarn@4.7.0"
+  "packageManager": "yarn@4.9.1"
 }

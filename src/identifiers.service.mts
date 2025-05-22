@@ -154,18 +154,21 @@ export function Identifiers({ hass, logger }: TServiceParams) {
         factory.createIdentifier("HassPlatformMapping"),
         undefined,
         undefined,
-        uniquePlatforms().map(platform =>
-          factory.createPropertySignature(
+        uniquePlatforms().map(platform => {
+          const list = hass.idBy.platform(platform);
+          return factory.createPropertySignature(
             undefined,
             factory.createStringLiteral(`_${platform}`),
             undefined,
-            factory.createUnionTypeNode(
-              hass.idBy
-                .platform(platform)
-                .map(id => factory.createLiteralTypeNode(factory.createStringLiteral(id))),
-            ),
-          ),
-        ),
+            is.empty(list)
+              ? factory.createKeywordTypeNode(SyntaxKind.NeverKeyword)
+              : factory.createUnionTypeNode(
+                  hass.idBy
+                    .platform(platform)
+                    .map(id => factory.createLiteralTypeNode(factory.createStringLiteral(id))),
+                ),
+          );
+        }),
       );
     },
     /**
