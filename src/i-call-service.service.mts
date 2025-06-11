@@ -3,7 +3,7 @@ import { HassServiceDTO, ServiceListField, ServiceListServiceTarget } from "@dig
 import { factory, SyntaxKind, TypeElement, TypeNode, TypeParameterDeclaration } from "typescript";
 import { inspect } from "util";
 
-export async function ICallServiceExtension({ hass, type_build }: TServiceParams) {
+export async function ICallServiceExtension({ hass, type_build, logger }: TServiceParams) {
   return async function () {
     inspect.defaultOptions.depth = 1000;
     const domains = await hass.fetch.listServices();
@@ -50,9 +50,22 @@ export async function ICallServiceExtension({ hass, type_build }: TServiceParams
                       )
                     : factory.createTypeLiteralNode(
                         Object.entries(value.fields)
+                          .filter(([param, definition]) => {
+                            const valid = !is.empty(param);
+                            if (!valid) {
+                              logger.warn(
+                                { definition, param },
+                                "[%s.%s] ignoring function param with invalid name",
+                                domain,
+                                key,
+                              );
+                              return false;
+                            }
+                            return true;
+                          })
                           .sort(([a], [b]) => (a > b ? UP : DOWN))
-                          .map(([service, details]) =>
-                            type_build.fields.fieldPropertySignature(service, details, domain, key),
+                          .map(([name, definition]) =>
+                            type_build.fields.fieldPropertySignature(name, definition, domain, key),
                           )
                           .filter(i => !is.undefined(i)) as TypeElement[],
                       ),
