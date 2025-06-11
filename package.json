@@ -3,7 +3,7 @@
   "name": "@digital-alchemy/type-writer",
   "repository": "https://github.com/Digital-Alchemy-TS/type-writer",
   "homepage": "https://docs.digital-alchemy.app/Type-Writer",
-  "version": "25.5.1",
+  "version": "25.6.1",
   "scripts": {
     "build": "rm -rf dist/; tsc",
     "lint": "eslint src",
@@ -40,27 +40,27 @@
   },
   "devDependencies": {
     "@cspell/eslint-plugin": "^9.0.2",
-    "@digital-alchemy/core": "^25.5.1",
-    "@digital-alchemy/hass": "^25.5.1",
+    "@digital-alchemy/core": "^25.5.2",
+    "@digital-alchemy/hass": "^25.5.2",
     "@eslint/compat": "^1.2.9",
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.27.0",
+    "@eslint/js": "^9.28.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.15.21",
-    "@typescript-eslint/eslint-plugin": "8.32.1",
-    "@typescript-eslint/parser": "8.32.1",
-    "eslint": "9.27.0",
+    "@types/node": "^24.0.0",
+    "@typescript-eslint/eslint-plugin": "8.34.0",
+    "@typescript-eslint/parser": "8.34.0",
+    "eslint": "9.28.0",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsonc": "^2.20.1",
     "eslint-plugin-no-unsanitized": "^4.1.2",
-    "eslint-plugin-prettier": "^5.4.0",
+    "eslint-plugin-prettier": "^5.4.1",
     "eslint-plugin-security": "^3.0.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-sonarjs": "^3.0.2",
     "eslint-plugin-sort-keys-fix": "^1.1.2",
     "eslint-plugin-unicorn": "^59.0.1",
-    "tsx": "^4.19.4"
+    "tsx": "^4.20.1"
   },
-  "packageManager": "yarn@4.9.1"
+  "packageManager": "yarn@4.9.2"
 }
