@@ -6,12 +6,7 @@ import {
   ServiceListSelector,
 } from "@digital-alchemy/hass";
 import { dump } from "js-yaml";
-import {
-  addSyntheticLeadingComment,
-  MethodSignature,
-  PropertySignature,
-  SyntaxKind,
-} from "typescript";
+import { addSyntheticLeadingComment, PropertySignature, SyntaxKind } from "typescript";
 
 export function TSDoc() {
   function showSelectorContent(selector: ServiceListSelector) {
@@ -43,7 +38,7 @@ export function TSDoc() {
   }
 
   // #MARK: ServiceComment
-  function serviceComment(method: MethodSignature, key: string, value: ServiceListField) {
+  function serviceComment(method: PropertySignature, key: string, value: ServiceListField) {
     return addSyntheticLeadingComment(
       method,
       SyntaxKind.MultiLineCommentTrivia,

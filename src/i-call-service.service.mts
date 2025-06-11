@@ -151,13 +151,16 @@ export async function ICallServiceExtension({ hass, type_build, logger }: TServi
       }
 
       return type_build.tsdoc.serviceComment(
-        factory.createMethodSignature(
+        factory.createPropertySignature(
           undefined,
-          factory.createIdentifier(key),
+          // ? quotes needed to handle services that start with numbers (ex: 2flr_covers)
+          factory.createStringLiteral(key),
           undefined,
-          generic,
-          serviceParameters(domain, key, value, genericIdentities),
-          returnType,
+          factory.createFunctionTypeNode(
+            generic,
+            serviceParameters(domain, key, value, genericIdentities),
+            returnType,
+          ),
         ),
         key,
         value,
