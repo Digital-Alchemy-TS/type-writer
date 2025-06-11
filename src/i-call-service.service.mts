@@ -154,8 +154,7 @@ export async function ICallServiceExtension({ hass, type_build, logger }: TServi
         factory.createPropertySignature(
           undefined,
           // ? quotes needed to handle services that start with numbers (ex: 2flr_covers)
-          // The prettier format step will remove all the unnecessary quotes
-          factory.createIdentifier(`"${key}"`),
+          factory.createStringLiteral(key),
           undefined,
           factory.createFunctionTypeNode(
             generic,
