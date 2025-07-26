@@ -1,4 +1,4 @@
-import { is } from "@digital-alchemy/core";
+import { is, TServiceParams } from "@digital-alchemy/core";
 import { dump } from "js-yaml";
 import {
   addSyntheticLeadingComment,
@@ -8,7 +8,7 @@ import {
   TypeNode,
 } from "typescript";
 
-export function ASTFragmentsExtension() {
+export function ASTFragmentsExtension({ type_build }: TServiceParams) {
   // #MARK: attributes
   function attributes<
     DATA extends object,
@@ -84,7 +84,8 @@ export function ASTFragmentsExtension() {
           "*\n" +
             [
               "> ```yaml",
-              ...dump({ [key]: data[key] })
+              ...type_build.tsdoc
+                .escapeCommentContent(dump({ [key]: data[key] }))
                 .trim()
                 .split("\n")
                 .map(i => `> ${i}`),

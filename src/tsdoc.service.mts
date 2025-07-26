@@ -1,4 +1,4 @@
-import { is, SINGLE } from "@digital-alchemy/core";
+import { is, SINGLE, START, TServiceParams } from "@digital-alchemy/core";
 import {
   ALL_DOMAINS,
   ServiceListField,
@@ -8,7 +8,23 @@ import {
 import { dump } from "js-yaml";
 import { addSyntheticLeadingComment, PropertySignature, SyntaxKind } from "typescript";
 
-export function TSDoc() {
+export function TSDoc({ config }: TServiceParams) {
+  // #MARK: escapeCommentContent
+  function escapeCommentContent(content: string): string {
+    // Always sanitize content first to prevent comment breaking
+    let sanitized = content.replace(/\*\//g, "[COMMENT_END]").replace(/\/\*/g, "[COMMENT_START]");
+
+    if (
+      config.type_build.SHORTEN_COMMENTS &&
+      sanitized.length > config.type_build.SHORTEN_COMMENTS
+    ) {
+      sanitized =
+        sanitized.substring(START, config.type_build.SHORTEN_COMMENTS) + "... [truncated]";
+    }
+
+    return sanitized;
+  }
+
   function showSelectorContent(selector: ServiceListSelector) {
     if (selector?.boolean === null) {
       return false;
@@ -43,7 +59,13 @@ export function TSDoc() {
       method,
       SyntaxKind.MultiLineCommentTrivia,
       `*\n` +
-        [`### ${value.name || key}`, "", ...value.description.split("\n").map(i => `> ${i}`)]
+        [
+          `### ${value.name || key}`,
+          "",
+          ...escapeCommentContent(value.description)
+            .split("\n")
+            .map(i => `> ${i}`),
+        ]
           .map(i => ` * ${i}`)
           .join(`\n`) +
         "\n ",
@@ -76,7 +98,9 @@ export function TSDoc() {
       `*\n` +
       [
         "## " + (is.empty(details.name) ? parameterName : details.name),
-        ...(is.empty(details.description) ? [] : ["", "> " + details.description]),
+        ...(is.empty(details.description)
+          ? []
+          : ["", "> " + escapeCommentContent(details.description)]),
         ...(is.empty(example)
           ? []
           : [
@@ -119,5 +143,5 @@ export function TSDoc() {
     );
   }
 
-  return { domainMarker, parameterComment, serviceComment };
+  return { domainMarker, escapeCommentContent, parameterComment, serviceComment };
 }

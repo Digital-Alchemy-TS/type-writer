@@ -14,7 +14,7 @@ type TargetReference = {
   platform?: TPlatformId;
 };
 
-export function EntityReference({ logger, hass }: TServiceParams) {
+export function EntityReference({ logger, hass, type_build }: TServiceParams) {
   function buildTargetReference(data: TargetReference) {
     if (!is.empty(data.platform)) {
       if (!is.empty(data.domain)) {
@@ -140,7 +140,8 @@ export function EntityReference({ logger, hass }: TServiceParams) {
             [
               "Assisted definition",
               "> ```yaml",
-              ...dump(target)
+              ...type_build.tsdoc
+                .escapeCommentContent(dump(target))
                 .trim()
                 .split("\n")
                 .map(i => `> ${i}`),

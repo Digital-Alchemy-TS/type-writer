@@ -54,6 +54,11 @@ export const LIB_TYPE_BUILD = CreateLibrary({
       description: "Prettier printWidth setting applied to output",
       type: "number",
     },
+    SHORTEN_COMMENTS: {
+      default: 500,
+      description: "Truncate tsdoc comments longer than this many characters (0 = no truncation)",
+      type: "number",
+    },
   },
   depends: [LIB_HASS],
   name: "type_build",
