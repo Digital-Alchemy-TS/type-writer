@@ -213,7 +213,7 @@ export function Identifiers({ hass, logger }: TServiceParams) {
         list.map(entity =>
           factory.createPropertySignature(
             undefined,
-            factory.createStringLiteral(entity.unique_id),
+            factory.createStringLiteral(String(entity.unique_id)),
             undefined,
             factory.createLiteralTypeNode(factory.createStringLiteral(entity.entity_id)),
           ),
