@@ -65,6 +65,7 @@ export default [
       "unicorn/no-object-as-default-parameter": "off",
       "unicorn/no-null": "off",
       "unicorn/no-empty-file": "off",
+      "sonarjs/no-undefined-argument": "off",
       "sonarjs/prefer-single-boolean-return": "off",
       "unicorn/no-array-callback-reference": "off",
       "sonarjs/prefer-nullish-coalescing": "off",
