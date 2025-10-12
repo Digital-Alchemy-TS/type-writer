@@ -126,7 +126,9 @@ export function ASTFragmentsExtension({ type_build }: TServiceParams) {
     );
   const union = (list: string[]) =>
     factory.createUnionTypeNode(
-      list.map(option => factory.createLiteralTypeNode(factory.createStringLiteral(option))),
+      list.map(option =>
+        factory.createLiteralTypeNode(factory.createStringLiteral(String(option))),
+      ),
     );
 
   return {
