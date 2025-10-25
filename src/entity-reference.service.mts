@@ -109,7 +109,9 @@ export function EntityReference({ logger, hass, type_build }: TServiceParams) {
   // #MARK: generateEntityList
   function generateEntityList(target: ServiceListServiceTarget) {
     return buildTargetReference({
-      domain: target?.entity?.[FIRST]?.domain,
+      domain: is.string(target?.entity?.[FIRST]?.domain)
+        ? [target?.entity?.[FIRST]?.domain]
+        : target?.entity?.[FIRST]?.domain,
       platform: target?.entity?.[FIRST]?.integration,
     });
   }
@@ -185,9 +187,6 @@ export function EntityReference({ logger, hass, type_build }: TServiceParams) {
           ]),
         ),
       ];
-    }
-    if (target.integration) {
-      return [];
     }
     if (target.device) {
       return [];
