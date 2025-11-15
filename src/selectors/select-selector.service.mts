@@ -1,11 +1,10 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
-import { ServiceListFieldDescription, ServiceListSelector } from "@digital-alchemy/hass";
+import { ServiceListSelector } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeNode } from "typescript";
 
 export function SelectSelector({ lifecycle, type_build }: TServiceParams) {
   lifecycle.onPreInit(() => {
     type_build.selectors.register({
-      matcher: (selector: ServiceListSelector) => !is.undefined(selector?.select),
       generator: (selector: ServiceListSelector) => {
         let node: TypeNode = is.empty(selector?.select.options)
           ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
@@ -27,6 +26,7 @@ export function SelectSelector({ lifecycle, type_build }: TServiceParams) {
         }
         return node;
       },
+      matcher: (selector: ServiceListSelector) => !is.undefined(selector?.select),
     });
   });
 }

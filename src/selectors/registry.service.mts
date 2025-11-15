@@ -31,15 +31,15 @@ export function SelectorRegistry({}: TServiceParams) {
   const handlers: SelectorHandler[] = [];
 
   return {
-    register(handler: SelectorHandler) {
-      handlers.push(handler);
-    },
     find(
       selector: ServiceListSelector,
       details: ServiceListFieldDescription,
       context: { parameterName: string; serviceDomain: string; serviceName: string },
     ): SelectorHandler | undefined {
       return handlers.find(handler => handler.matcher(selector, details, context));
+    },
+    register(handler: SelectorHandler) {
+      handlers.push(handler);
     },
   };
 }

@@ -6,7 +6,7 @@ export function ObjectSelector({ lifecycle, type_build }: TServiceParams) {
   lifecycle.onPreInit(() => {
     type_build.selectors.register({
       generator: (
-        selector: ServiceListSelector,
+        _selector: ServiceListSelector,
         details: ServiceListFieldDescription,
         context: { parameterName: string; serviceDomain: string; serviceName: string },
       ) => {

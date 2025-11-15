@@ -4,9 +4,6 @@ import { factory, TypeNode, TypeParameterDeclaration } from "typescript";
 export function WeatherForecastsOverride({ lifecycle, type_build }: TServiceParams) {
   lifecycle.onPreInit(() => {
     type_build.serviceOverrides.register({
-      matcher: (domain: string, serviceName: string) => {
-        return domain === "weather" && serviceName === "get_forecasts";
-      },
       generator: (domain: string, serviceName: string) => {
         // https://github.com/Digital-Alchemy-TS/hass/issues/66
         const genericIdentities = "ENTITIES";
@@ -41,10 +38,13 @@ export function WeatherForecastsOverride({ lifecycle, type_build }: TServicePara
         ];
 
         return {
-          genericIdentities,
           defaultReturnType,
+          genericIdentities,
           genericParams,
         };
+      },
+      matcher: (domain: string, serviceName: string) => {
+        return domain === "weather" && serviceName === "get_forecasts";
       },
     });
   });
