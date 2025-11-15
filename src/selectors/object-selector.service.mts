@@ -5,7 +5,10 @@ import { factory, SyntaxKind, TypeNode } from "typescript";
 export function ObjectSelector({ lifecycle, type_build }: TServiceParams) {
   lifecycle.onPreInit(() => {
     type_build.selectors.register({
-      matcher: (selector: ServiceListSelector) => !is.undefined(selector?.object),
+      matcher: (selector: ServiceListSelector) => {
+        // Only match when object is defined AND not null
+        return !is.undefined(selector?.object) && selector.object !== null;
+      },
       generator: (
         selector: ServiceListSelector,
         details: ServiceListFieldDescription,
@@ -55,13 +58,24 @@ export function ObjectSelector({ lifecycle, type_build }: TServiceParams) {
           }
         }
 
-        // Fallback to handleSelectors for object with null
-        return type_build.fields.handleSelectors(
-          context.parameterName,
-          context.serviceDomain,
-          context.serviceName,
-          { selector, ...details },
-        );
+        // If no default value, return default object type
+        // This handles the case where object selector has fields but no default
+        return factory.createUnionTypeNode([
+          context.serviceDomain === "scene" && context.serviceName === "apply"
+            ? factory.createTypeReferenceNode(factory.createIdentifier("Partial"), [
+                factory.createTypeReferenceNode(factory.createIdentifier("Record"), [
+                  factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), undefined),
+                  factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
+                ]),
+              ])
+            : factory.createTypeReferenceNode(factory.createIdentifier("Record"), [
+                factory.createKeywordTypeNode(SyntaxKind.StringKeyword),
+                factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
+              ]),
+          factory.createParenthesizedType(
+            factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword)),
+          ),
+        ]);
       },
     });
   });

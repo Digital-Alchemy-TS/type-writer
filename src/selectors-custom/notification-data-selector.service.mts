@@ -24,6 +24,7 @@ export function NotificationDataSelector({ lifecycle, type_build }: TServicePara
       },
       matcher: (selector: ServiceListSelector, details: ServiceListFieldDescription, context) => {
         return (
+          selector &&
           "object" in selector &&
           selector.object === null &&
           context.serviceDomain === "notify" &&
