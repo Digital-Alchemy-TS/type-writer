@@ -1,5 +1,5 @@
-import { is, TServiceParams } from "@digital-alchemy/core";
-import { ServiceListFieldDescription, ServiceListSelector } from "@digital-alchemy/hass";
+import { TServiceParams } from "@digital-alchemy/core";
+import { ServiceListFieldDescription } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeNode } from "typescript";
 
 export function FieldBuilder({ type_build }: TServiceParams) {
@@ -8,29 +8,22 @@ export function FieldBuilder({ type_build }: TServiceParams) {
     parameterName: string,
     serviceDomain: string,
     serviceName: string,
-    { selector }: ServiceListFieldDescription,
+    { selector, ...details }: ServiceListFieldDescription,
   ) {
+    const context = { parameterName, serviceDomain, serviceName };
+
+    // Try custom selectors first (they have more specific matchers)
+    const handler = type_build.selectors.find(selector, details, context);
+    if (handler) {
+      return handler.generator(selector, details, context);
+    }
+
+    // Fallback for object with null
     if ("object" in selector && selector.object === null) {
-      if (serviceDomain === "notify" && parameterName === "data") {
-        return factory.createIntersectionTypeNode([
-          factory.createTypeReferenceNode(factory.createIdentifier("NotificationData"), undefined),
-          factory.createParenthesizedType(
-            factory.createUnionTypeNode([
-              factory.createTypeReferenceNode(
-                factory.createIdentifier("AndroidNotificationData"),
-                undefined,
-              ),
-              factory.createTypeReferenceNode(
-                factory.createIdentifier("AppleNotificationData"),
-                undefined,
-              ),
-            ]),
-          ),
-        ]);
-      }
       return factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
     }
 
+    // Default object selector behavior
     return factory.createUnionTypeNode([
       serviceDomain === "scene" && serviceName === "apply"
         ? factory.createTypeReferenceNode(factory.createIdentifier("Partial"), [
@@ -49,69 +42,6 @@ export function FieldBuilder({ type_build }: TServiceParams) {
     ]);
   }
 
-  /**
-   * Object selectors are a bit of a catchall for a variety of odd things
-   *
-   * dev note: it may be better to pull in quicktype as a next step, instead of further patching this logic
-   * this seems like it could be anything, only going to account for some basics here
-   */
-  function objectSelector(
-    serviceName: string,
-    parameterName: string,
-    serviceDomain: string,
-    selector: ServiceListSelector,
-    details: ServiceListFieldDescription,
-  ) {
-    // using the default value to infer a type
-    if (!is.undefined(details.default)) {
-      // example: [ 'grafana', 'Configurator', 'core_mariadb' ]
-      if (is.array(details.default)) {
-        const isStringArray = details.default.every(i => is.string(i));
-        return isStringArray
-          ? factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.StringKeyword))
-          : factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword));
-      }
-
-      // example: { addons: [ 'MariaDB' ], folders: [ 'Local add-ons', 'share' ] }
-      if (is.object(details.default)) {
-        return factory.createTypeLiteralNode(
-          Object.entries(details.default).map(([key, value]) => {
-            let type: TypeNode;
-            if (is.array(value)) {
-              const isStringArray = value.every(i => is.string(i));
-              type = isStringArray
-                ? factory.createArrayTypeNode(
-                    factory.createKeywordTypeNode(SyntaxKind.StringKeyword),
-                  )
-                : factory.createArrayTypeNode(
-                    factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
-                  );
-            } else if (is.string(value)) {
-              type = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
-            } else if (is.number(value)) {
-              type = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-            } else if (is.boolean(value)) {
-              type = factory.createKeywordTypeNode(SyntaxKind.BooleanKeyword);
-            } else {
-              type = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
-            }
-            return factory.createPropertySignature(
-              undefined,
-              factory.createIdentifier(key),
-              undefined,
-              type,
-            );
-          }),
-        );
-      }
-    }
-
-    return handleSelectors(parameterName, serviceDomain, serviceName, {
-      selector,
-      ...details,
-    });
-  }
-
   // #MARK: fieldPropertySignature
   /**
    * Used to determine the type for individual named function params.
@@ -122,48 +52,17 @@ export function FieldBuilder({ type_build }: TServiceParams) {
     serviceDomain: string,
     serviceName: string,
   ) {
+    const context = { parameterName, serviceDomain, serviceName };
+
+    // Try to find a handler in the registry
+    const handler = type_build.selectors.find(selector, details, context);
+
     let node: TypeNode;
-    // : boolean
-    if (!is.undefined(selector?.boolean))
-      node = factory.createKeywordTypeNode(SyntaxKind.BooleanKeyword);
-    // : number
-    else if (!is.undefined(selector?.number))
-      node = factory.createKeywordTypeNode(SyntaxKind.NumberKeyword);
-    // : string
-    else if (!is.undefined(selector?.text) || !is.undefined(selector?.time))
-      node = factory.createKeywordTypeNode(SyntaxKind.StringKeyword);
-    // string | `domain.${keyof typeof ENTITY_SETUP.domain}`
-    else if (!is.undefined(selector?.entity))
-      // some combination of: PICK_ENTITY | PICK_ENTITY[] | PICK_ENTITY<"domain"> | PICK_ENTITY<"domain">[]
-      node = type_build.entity.buildEntityReference(selector);
-    // : "option" | "option" | "option" | "option"
-    else if (!is.undefined(selector?.select)) {
-      node = is.empty(selector?.select.options)
-        ? factory.createKeywordTypeNode(SyntaxKind.StringKeyword)
-        : factory.createUnionTypeNode(
-            selector?.select.options.map((i: string | Record<"label" | "value", string>) =>
-              factory.createLiteralTypeNode(
-                factory.createStringLiteral(is.string(i) ? i : i.value),
-              ),
-            ),
-          );
-      if (selector?.select?.custom_value && !is.empty(selector?.select.options)) {
-        node = factory.createTypeReferenceNode(factory.createIdentifier("LiteralUnion"), [
-          node,
-          factory.createKeywordTypeNode(SyntaxKind.StringKeyword),
-        ]);
-      }
-      if (selector?.select?.multiple) {
-        node = factory.createArrayTypeNode(node);
-      }
-    }
-    // : Record<string, unknown> | (unknown[]);
-    else if (is.undefined(selector?.object))
+    if (handler) {
+      node = handler.generator(selector, details, context);
+    } else {
+      // Fallback to unknown
       node = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
-    // else if (!is.undefined(selector?.))
-    // : unknown
-    else {
-      node = objectSelector(serviceName, parameterName, serviceDomain, selector, details);
     }
 
     return type_build.tsdoc.parameterComment(
@@ -180,5 +79,6 @@ export function FieldBuilder({ type_build }: TServiceParams) {
 
   return {
     fieldPropertySignature,
+    handleSelectors, // Export for object selector fallback
   };
 }

@@ -9,6 +9,7 @@
 apps/**/yarn.lock
 # Private keys
 **/*vsix
+hass/
 
 # dependencies
 **/node_modules

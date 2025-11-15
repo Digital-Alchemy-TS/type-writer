@@ -28,6 +28,18 @@ import { FieldBuilder } from "./field-builder.service.mts";
 import { ICallServiceExtension } from "./i-call-service.service.mts";
 import { Identifiers } from "./identifiers.service.mts";
 import { Printer } from "./printer.service.mts";
+import {
+  BooleanSelector,
+  EntitySelector,
+  NumberSelector,
+  ObjectSelector,
+  SelectorRegistry,
+  SelectSelector,
+  TextSelector,
+  TimeSelector,
+} from "./selectors/index.mts";
+import { NotificationDataSelector } from "./selectors-custom/index.mts";
+import { ServiceOverrideRegistry, WeatherForecastsOverride } from "./services-custom/index.mts";
 import { TSDoc } from "./tsdoc.service.mts";
 
 const DOMAINS = {
@@ -45,6 +57,24 @@ const DOMAINS = {
   SwitchBuilder,
   UpdateBuilder,
   WeatherBuilder,
+};
+
+const SELECTORS = {
+  booleanSelector: BooleanSelector,
+  entitySelector: EntitySelector,
+  numberSelector: NumberSelector,
+  objectSelector: ObjectSelector,
+  selectSelector: SelectSelector,
+  textSelector: TextSelector,
+  timeSelector: TimeSelector,
+};
+
+const SELECTORS_CUSTOM = {
+  notificationDataSelector: NotificationDataSelector,
+};
+
+const SERVICES_CUSTOM = {
+  weatherForecastsOverride: WeatherForecastsOverride,
 };
 
 export const LIB_TYPE_BUILD = CreateLibrary({
@@ -65,6 +95,9 @@ export const LIB_TYPE_BUILD = CreateLibrary({
   priorityInit: ["domain"],
   services: {
     ...DOMAINS,
+    ...SELECTORS,
+    ...SELECTORS_CUSTOM,
+    ...SERVICES_CUSTOM,
     ast: ASTFragmentsExtension,
     build: BuildTypes,
     call_service: ICallServiceExtension,
@@ -73,6 +106,8 @@ export const LIB_TYPE_BUILD = CreateLibrary({
     fields: FieldBuilder,
     identifiers: Identifiers,
     printer: Printer,
+    selectors: SelectorRegistry,
+    serviceOverrides: ServiceOverrideRegistry,
     tsdoc: TSDoc,
   },
 });
