@@ -5,10 +5,6 @@ import { factory, SyntaxKind, TypeNode } from "typescript";
 export function ObjectSelector({ lifecycle, type_build }: TServiceParams) {
   lifecycle.onPreInit(() => {
     type_build.selectors.register({
-      matcher: (selector: ServiceListSelector) => {
-        // Only match when object is defined AND not null
-        return !is.undefined(selector?.object) && selector.object !== null;
-      },
       generator: (
         selector: ServiceListSelector,
         details: ServiceListFieldDescription,
@@ -21,7 +17,9 @@ export function ObjectSelector({ lifecycle, type_build }: TServiceParams) {
             const isStringArray = details.default.every(i => is.string(i));
             return isStringArray
               ? factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.StringKeyword))
-              : factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword));
+              : factory.createArrayTypeNode(
+                  factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
+                );
           }
 
           // example: { addons: [ 'MariaDB' ], folders: [ 'Local add-ons', 'share' ] }
@@ -64,7 +62,10 @@ export function ObjectSelector({ lifecycle, type_build }: TServiceParams) {
           context.serviceDomain === "scene" && context.serviceName === "apply"
             ? factory.createTypeReferenceNode(factory.createIdentifier("Partial"), [
                 factory.createTypeReferenceNode(factory.createIdentifier("Record"), [
-                  factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), undefined),
+                  factory.createTypeReferenceNode(
+                    factory.createIdentifier("PICK_ENTITY"),
+                    undefined,
+                  ),
                   factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword),
                 ]),
               ])
@@ -76,6 +77,10 @@ export function ObjectSelector({ lifecycle, type_build }: TServiceParams) {
             factory.createArrayTypeNode(factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword)),
           ),
         ]);
+      },
+      matcher: (selector: ServiceListSelector) => {
+        // Only match when object is defined AND not null
+        return !is.undefined(selector?.object) && selector.object !== null;
       },
     });
   });
