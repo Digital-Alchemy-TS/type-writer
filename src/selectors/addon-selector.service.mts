@@ -7,7 +7,6 @@ export function AddonSelector({ hass, lifecycle, logger, type_build }: TServiceP
   let addonMap: Record<string, string> = {};
 
   hass.socket.onConnect(async () => {
-    // lifecycle.onBootstrap(async () => {
     try {
       const addons = await hass.addon.list();
       // Build map of human-readable names to slugs

@@ -10,7 +10,7 @@
     "test": "./scripts/test.sh",
     "prepublishOnly": "yarn build",
     "upgrade": "yarn up '@digital-alchemy/*'",
-    "dev": " npx tsx src/main.mts --TARGET_DIR=./test-out"
+    "dev": "npx tsx src/main.mts --TARGET_DIR=./test-out"
   },
   "author": {
     "url": "https://github.com/zoe-codez",

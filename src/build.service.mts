@@ -1,4 +1,4 @@
-import { is, TServiceParams } from "@digital-alchemy/core";
+import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
 import { ENTITY_STATE, PICK_ENTITY } from "@digital-alchemy/hass";
 import { format } from "prettier";
 import { exit } from "process";
@@ -42,9 +42,6 @@ export function BuildTypes({ config, logger, hass, type_build }: TServiceParams)
         ),
       );
     } else {
-      // Create object literal with human-readable names as keys and slugs as values
-      const UP = 1;
-      const DOWN = -1;
       const properties = Object.entries(addonMap)
         .sort(([a], [b]) => (a > b ? UP : DOWN))
         .map(([name, slug]) =>
