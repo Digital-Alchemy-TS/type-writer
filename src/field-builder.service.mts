@@ -1,5 +1,5 @@
 import { TServiceParams } from "@digital-alchemy/core";
-import { ServiceListFieldDescription } from "@digital-alchemy/hass";
+import { ServiceListFieldDescription, ServiceListSelector } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeNode } from "typescript";
 
 export function FieldBuilder({ type_build }: TServiceParams) {
@@ -13,9 +13,9 @@ export function FieldBuilder({ type_build }: TServiceParams) {
     const context = { parameterName, serviceDomain, serviceName };
 
     // Try custom selectors first (they have more specific matchers)
-    const handler = type_build.selectors.find(selector, details, context);
+    const handler = type_build.selectors.find(selector as ServiceListSelector, details, context);
     if (handler) {
-      return handler.generator(selector, details, context);
+      return handler.generator(selector as ServiceListSelector, details, context);
     }
 
     // Fallback for object with null
@@ -55,11 +55,11 @@ export function FieldBuilder({ type_build }: TServiceParams) {
     const context = { parameterName, serviceDomain, serviceName };
 
     // Try to find a handler in the registry
-    const handler = type_build.selectors.find(selector, details, context);
+    const handler = type_build.selectors.find(selector as ServiceListSelector, details, context);
 
     let node: TypeNode;
     if (handler) {
-      node = handler.generator(selector, details, context);
+      node = handler.generator(selector as ServiceListSelector, details, context);
     } else {
       // Fallback to unknown
       node = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);

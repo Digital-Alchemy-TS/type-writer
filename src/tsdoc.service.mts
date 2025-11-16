@@ -80,7 +80,7 @@ export function TSDoc({ config }: TServiceParams) {
     { selector, ...details }: ServiceListFieldDescription,
   ) {
     const example = String(details.example ?? "");
-    const selectorContent = showSelectorContent(selector)
+    const selectorContent = showSelectorContent(selector as ServiceListSelector)
       ? [
           "",
           "## Selector",

@@ -22,7 +22,7 @@ export function NotificationDataSelector({ lifecycle, type_build }: TServicePara
           ),
         ]);
       },
-      matcher: (selector: ServiceListSelector, details: ServiceListFieldDescription, context) => {
+      matcher: (selector: ServiceListSelector, _details: ServiceListFieldDescription, context) => {
         return (
           selector &&
           "object" in selector &&

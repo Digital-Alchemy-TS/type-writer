@@ -4,7 +4,7 @@ import { factory, TypeNode, TypeParameterDeclaration } from "typescript";
 export function WeatherForecastsOverride({ lifecycle, type_build }: TServiceParams) {
   lifecycle.onPreInit(() => {
     type_build.serviceOverrides.register({
-      generator: (domain: string, serviceName: string) => {
+      generator: () => {
         // https://github.com/Digital-Alchemy-TS/hass/issues/66
         const genericIdentities = "ENTITIES";
         const defaultReturnType: TypeNode = factory.createTypeReferenceNode(
