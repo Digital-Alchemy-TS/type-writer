@@ -30,9 +30,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "prettier": "^3.6.2",
-    "type-fest": "^5.1.0",
+    "type-fest": "^5.2.0",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
@@ -40,17 +40,17 @@
     "@digital-alchemy/hass": "*"
   },
   "devDependencies": {
-    "@cspell/eslint-plugin": "^9.2.2",
-    "@digital-alchemy/core": "^25.8.21",
-    "@digital-alchemy/hass": "^25.10.27-beta.3",
-    "@eslint/compat": "^1.4.0",
+    "@cspell/eslint-plugin": "^9.3.2",
+    "@digital-alchemy/core": "^25.11.7",
+    "@digital-alchemy/hass": "^25.11.16",
+    "@eslint/compat": "^2.0.0",
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.38.0",
+    "@eslint/js": "^9.39.1",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^24.9.1",
-    "@typescript-eslint/eslint-plugin": "8.46.2",
-    "@typescript-eslint/parser": "8.46.2",
-    "eslint": "9.38.0",
+    "@types/node": "^24.10.1",
+    "@typescript-eslint/eslint-plugin": "8.46.4",
+    "@typescript-eslint/parser": "8.46.4",
+    "eslint": "9.39.1",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsonc": "^2.21.0",
@@ -60,7 +60,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-sonarjs": "^3.0.5",
     "eslint-plugin-sort-keys-fix": "^1.1.2",
-    "eslint-plugin-unicorn": "^61.0.2",
+    "eslint-plugin-unicorn": "^62.0.0",
     "tsx": "^4.20.6"
   },
   "packageManager": "yarn@4.11.0"
