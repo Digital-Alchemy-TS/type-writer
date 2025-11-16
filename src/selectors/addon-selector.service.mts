@@ -1,5 +1,5 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
-import { AddonDetails, ServiceListSelector } from "@digital-alchemy/hass";
+import { ServiceListSelector } from "@digital-alchemy/hass";
 import { factory, SyntaxKind, TypeNode } from "typescript";
 
 export function AddonSelector({ hass, lifecycle, logger, type_build }: TServiceParams) {
@@ -9,7 +9,7 @@ export function AddonSelector({ hass, lifecycle, logger, type_build }: TServiceP
   hass.socket.onConnect(async () => {
     // lifecycle.onBootstrap(async () => {
     try {
-      const { addons } = (await hass.addon.list()) as unknown as { addons: AddonDetails[] };
+      const addons = await hass.addon.list();
       // Build map of human-readable names to slugs
       addonMap = {};
       for (const addon of addons) {

@@ -108,11 +108,10 @@ export function EntityReference({ logger, hass, type_build }: TServiceParams) {
 
   // #MARK: generateEntityList
   function generateEntityList(target: ServiceListServiceTarget) {
+    const [entity] = is.array(target.entity) ? target.entity : [target.entity];
     return buildTargetReference({
-      domain: is.string(target?.entity?.[FIRST]?.domain)
-        ? [target?.entity?.[FIRST]?.domain]
-        : target?.entity?.[FIRST]?.domain,
-      platform: target?.entity?.[FIRST]?.integration,
+      domain: is.array(entity?.domain) ? entity?.domain : [entity?.domain],
+      platform: entity?.integration,
     });
   }
   // #MARK: createTarget

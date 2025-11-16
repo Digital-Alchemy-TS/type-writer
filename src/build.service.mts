@@ -141,6 +141,8 @@ export function BuildTypes({ config, logger, hass, type_build }: TServiceParams)
           `  NotificationData,`,
           `  PICK_ENTITY,`,
           ...(services.includes("PICK_FROM_PLATFORM") ? [`  PICK_FROM_PLATFORM,`] : []),
+          `  SupportedCountries,`,
+          `  SupportedLanguages,`,
           `  TAreaId,`,
           `  TDeviceId,`,
           `  TLabelId,`,
