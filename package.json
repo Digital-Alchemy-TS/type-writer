@@ -9,7 +9,8 @@
     "lint": "eslint src",
     "test": "./scripts/test.sh",
     "prepublishOnly": "yarn build",
-    "upgrade": "yarn up '@digital-alchemy/*'"
+    "upgrade": "yarn up '@digital-alchemy/*'",
+    "dev": " npx tsx src/main.mts --TARGET_DIR=./test-out"
   },
   "author": {
     "url": "https://github.com/zoe-codez",
@@ -41,7 +42,7 @@
   "devDependencies": {
     "@cspell/eslint-plugin": "^9.2.2",
     "@digital-alchemy/core": "^25.8.21",
-    "@digital-alchemy/hass": "^v25.10.21-beta.0",
+    "@digital-alchemy/hass": "^25.10.27-beta.3",
     "@eslint/compat": "^1.4.0",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.38.0",
@@ -62,5 +63,5 @@
     "eslint-plugin-unicorn": "^61.0.2",
     "tsx": "^4.20.6"
   },
-  "packageManager": "yarn@4.10.3"
+  "packageManager": "yarn@4.11.0"
 }

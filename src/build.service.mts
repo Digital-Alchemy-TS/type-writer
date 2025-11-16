@@ -1,8 +1,85 @@
-import { TServiceParams } from "@digital-alchemy/core";
+import { is, TServiceParams } from "@digital-alchemy/core";
 import { ENTITY_STATE, PICK_ENTITY } from "@digital-alchemy/hass";
+import { format } from "prettier";
 import { exit } from "process";
+import {
+  createPrinter,
+  createSourceFile,
+  EmitHint,
+  factory,
+  NewLineKind,
+  NodeFlags,
+  ScriptKind,
+  ScriptTarget,
+  SyntaxKind,
+} from "typescript";
 
-export function BuildTypes({ logger, hass, type_build }: TServiceParams) {
+export function BuildTypes({ config, logger, hass, type_build }: TServiceParams) {
+  async function buildInstalledAddons(): Promise<string> {
+    const addonMap = type_build.addonSelector.getAddonMap();
+    const printer = createPrinter({ newLine: NewLineKind.LineFeed });
+    const resultFile = createSourceFile("", "", ScriptTarget.Latest, false, ScriptKind.TS);
+
+    let variableStatement;
+
+    if (is.empty(addonMap)) {
+      // Return empty object if no addons were loaded
+      variableStatement = factory.createVariableStatement(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              factory.createIdentifier("InstalledAddons"),
+              undefined,
+              undefined,
+              factory.createAsExpression(
+                factory.createObjectLiteralExpression([], false),
+                factory.createTypeReferenceNode(factory.createIdentifier("const")),
+              ),
+            ),
+          ],
+          NodeFlags.Const,
+        ),
+      );
+    } else {
+      // Create object literal with human-readable names as keys and slugs as values
+      const UP = 1;
+      const DOWN = -1;
+      const properties = Object.entries(addonMap)
+        .sort(([a], [b]) => (a > b ? UP : DOWN))
+        .map(([name, slug]) =>
+          factory.createPropertyAssignment(
+            factory.createStringLiteral(name),
+            factory.createStringLiteral(slug),
+          ),
+        );
+
+      variableStatement = factory.createVariableStatement(
+        [factory.createToken(SyntaxKind.ExportKeyword)],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              factory.createIdentifier("InstalledAddons"),
+              undefined,
+              undefined,
+              factory.createAsExpression(
+                factory.createObjectLiteralExpression(properties, false),
+                factory.createTypeReferenceNode(factory.createIdentifier("const")),
+              ),
+            ),
+          ],
+          NodeFlags.Const,
+        ),
+      );
+    }
+
+    const output = printer.printNode(EmitHint.Unspecified, variableStatement, resultFile);
+    return await format(output, {
+      parser: "typescript",
+      printWidth: config.type_build.PRINT_WIDTH,
+    });
+  }
+
   async function buildServices() {
     return [await type_build.call_service()];
   }
@@ -35,6 +112,7 @@ export function BuildTypes({ logger, hass, type_build }: TServiceParams) {
       const services = await type_build.printer(await buildServices());
       const registry = await type_build.printer(await buildRegistry());
       const mappings = await type_build.printer(buildMappings(entities));
+      const installedAddons = await buildInstalledAddons();
 
       return {
         /**
@@ -54,6 +132,8 @@ export function BuildTypes({ logger, hass, type_build }: TServiceParams) {
          */
         services: [
           `import "@digital-alchemy/hass";`,
+          ``,
+          installedAddons,
           ``,
           `import {`,
           `  AndroidNotificationData,`,

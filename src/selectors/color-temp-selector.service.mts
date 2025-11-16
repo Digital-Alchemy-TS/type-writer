@@ -1,5 +1,5 @@
 import { is, TServiceParams } from "@digital-alchemy/core";
-import { ServiceListFieldDescription, ServiceListSelector } from "@digital-alchemy/hass";
+import { ServiceListSelector } from "@digital-alchemy/hass";
 import { factory, SyntaxKind } from "typescript";
 
 export function ColorTempSelector({ lifecycle, type_build }: TServiceParams) {

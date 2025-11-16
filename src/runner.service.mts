@@ -45,5 +45,5 @@ export function Runner({ type_build, lifecycle, logger, config }: TServiceParams
     logger.debug(`starting build`);
     await runner();
     setImmediate(() => exit());
-  });
+  }, Number.NEGATIVE_INFINITY);
 }
