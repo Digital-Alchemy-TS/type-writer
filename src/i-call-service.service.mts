@@ -97,36 +97,18 @@ export async function ICallServiceExtension({ hass, type_build, logger }: TServi
 
       // Override default return type for some known cases
       let defaultReturnType: TypeNode = factory.createKeywordTypeNode(SyntaxKind.UnknownKeyword);
-      // * weather.get_forecasts
-      if (domain === "weather" && key === "get_forecasts") {
-        // https://github.com/Digital-Alchemy-TS/hass/issues/66
-        genericIdentities = "ENTITIES";
-        defaultReturnType = factory.createTypeReferenceNode(factory.createIdentifier("Record"), [
-          factory.createTypeReferenceNode(factory.createIdentifier("ENTITIES"), undefined),
-          factory.createTypeLiteralNode([
-            factory.createPropertySignature(
-              undefined,
-              factory.createIdentifier("forecast"),
-              undefined,
-              factory.createArrayTypeNode(
-                factory.createTypeReferenceNode(
-                  factory.createIdentifier("WeatherGetForecasts"),
-                  undefined,
-                ),
-              ),
-            ),
-          ]),
-        ]);
-        generic.push(
-          factory.createTypeParameterDeclaration(
-            undefined,
-            factory.createIdentifier(genericIdentities),
-            factory.createTypeReferenceNode(factory.createIdentifier("PICK_ENTITY"), [
-              factory.createLiteralTypeNode(factory.createStringLiteral("weather")),
-            ]),
-            undefined,
-          ),
-        );
+
+      // Try to find a service override
+      const override = type_build.serviceOverrides.find(domain, key);
+      if (override) {
+        const overrideResult = override.generator(domain, key);
+        if (overrideResult.genericIdentities) {
+          genericIdentities = overrideResult.genericIdentities;
+        }
+        defaultReturnType = overrideResult.defaultReturnType;
+        if (overrideResult.genericParams) {
+          generic.push(...overrideResult.genericParams);
+        }
       }
 
       let returnType: TypeNode | undefined = factory.createTypeReferenceNode(

@@ -2,7 +2,6 @@ import { is, TServiceParams } from "@digital-alchemy/core";
 import { factory, SyntaxKind } from "typescript";
 
 export function ClimateBuilder({ type_build }: TServiceParams) {
-  // @ts-expect-error ignore
   type_build.domain.register<"climate">({
     async attributes(data) {
       const attributes = data.attributes as object as ClimateAttributes;
