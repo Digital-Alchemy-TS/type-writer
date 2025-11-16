@@ -10,7 +10,7 @@ import { addSyntheticLeadingComment, PropertySignature, SyntaxKind } from "types
 
 export function TSDoc({ config }: TServiceParams) {
   // #MARK: escapeCommentContent
-  function escapeCommentContent(content: string): string {
+  function escapeCommentContent(content: string = ""): string {
     // Always sanitize content first to prevent comment breaking
     let sanitized = content.replace(/\*\//g, "[COMMENT_END]").replace(/\/\*/g, "[COMMENT_START]");
 
