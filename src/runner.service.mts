@@ -53,6 +53,7 @@ export function Runner({ type_build, lifecycle, logger, config, hass, context }:
       };
 
       hass.socket.onEvent({ context, event: "service_registered", exec: onUpdate });
+      hass.socket.onEvent({ context, event: "service_removed", exec: onUpdate });
       hass.events.onAreaRegistryUpdate(onUpdate);
       hass.events.onDeviceRegistryUpdate(onUpdate);
       hass.events.onEntityRegistryUpdate(onUpdate);
