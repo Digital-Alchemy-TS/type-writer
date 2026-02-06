@@ -47,9 +47,17 @@ export function Runner({ type_build, lifecycle, logger, config, hass, context }:
     const watch = config.type_writer.WATCH_MODE;
     if (watch) {
       logger.info(`Watching Home Assistant for updates...`);
+
+      let clearHandle: NodeJS.Timeout | undefined;
+
+      const ONE_SECOND = 1_000;
+
       const onUpdate = async () => {
-        logger.info(`Update received in Home Assistant. Writing new types...`);
-        await runner();
+        clearInterval(clearHandle);
+        clearHandle = setTimeout(async () => {
+          logger.info(`Update received in Home Assistant. Writing new types...`);
+          await runner();
+        }, ONE_SECOND);
       };
 
       hass.socket.onEvent({ context, event: "service_registered", exec: onUpdate });
