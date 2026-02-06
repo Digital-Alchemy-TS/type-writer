@@ -50,14 +50,14 @@ export function Runner({ type_build, lifecycle, logger, config, hass, context }:
 
       let clearHandle: NodeJS.Timeout | undefined;
 
-      const ONE_SECOND = 1_000;
+      const HALF_A_SECOND = 500;
 
       const onUpdate = async () => {
         clearInterval(clearHandle);
         clearHandle = setTimeout(async () => {
           logger.info(`Update received in Home Assistant. Writing new types...`);
           await runner();
-        }, ONE_SECOND);
+        }, HALF_A_SECOND);
       };
 
       hass.socket.onEvent({ context, event: "service_registered", exec: onUpdate });
