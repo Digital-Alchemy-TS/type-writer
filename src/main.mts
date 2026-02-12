@@ -12,6 +12,11 @@ const TYPE_WRITER = CreateApplication({
       description: "Define a base folder to write types to",
       type: "string",
     },
+    WATCH_MODE: {
+      default: false,
+      description: "Watch for changes in the Home Assistant registries",
+      type: "boolean",
+    },
   },
   libraries: [LIB_HASS, LIB_TYPE_BUILD],
   name: "type_writer",

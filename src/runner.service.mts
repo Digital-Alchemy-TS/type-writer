@@ -15,7 +15,7 @@ const REGISTRY_HEADER = [
   "",
 ].join("\n");
 
-export function Runner({ type_build, lifecycle, logger, config }: TServiceParams) {
+export function Runner({ type_build, lifecycle, logger, config, hass, context }: TServiceParams) {
   async function runner() {
     try {
       const writeBase = isAbsolute(config.type_writer.TARGET_DIR)
@@ -44,6 +44,32 @@ export function Runner({ type_build, lifecycle, logger, config }: TServiceParams
   lifecycle.onReady(async () => {
     logger.debug(`starting build`);
     await runner();
-    setImmediate(() => exit());
+    const watch = config.type_writer.WATCH_MODE;
+    if (watch) {
+      logger.info(`Watching Home Assistant for updates...`);
+
+      let clearHandle: NodeJS.Timeout | undefined;
+
+      const HALF_A_SECOND = 500;
+
+      const onUpdate = async () => {
+        clearInterval(clearHandle);
+        clearHandle = setTimeout(async () => {
+          logger.info(`Update received in Home Assistant. Writing new types...`);
+          await runner();
+        }, HALF_A_SECOND);
+      };
+
+      hass.socket.onEvent({ context, event: "service_registered", exec: onUpdate });
+      hass.socket.onEvent({ context, event: "service_removed", exec: onUpdate });
+      hass.events.onAreaRegistryUpdate(onUpdate);
+      hass.events.onDeviceRegistryUpdate(onUpdate);
+      hass.events.onEntityRegistryUpdate(onUpdate);
+      hass.events.onFloorRegistryUpdate(onUpdate);
+      hass.events.onLabelRegistryUpdate(onUpdate);
+      hass.events.onZoneRegistryUpdate(onUpdate);
+    } else {
+      setImmediate(() => exit());
+    }
   }, Number.NEGATIVE_INFINITY);
 }
