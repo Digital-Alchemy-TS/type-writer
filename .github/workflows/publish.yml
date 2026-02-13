@@ -5,6 +5,7 @@ on:
     types: [published, prereleased]
 
 permissions:
+  id-token: write
   contents: read
 
 jobs:
@@ -18,7 +19,7 @@ jobs:
       url: ${{ github.event.release.html_url }}
     steps:
     - uses: actions/checkout@v5
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v6
       with:
         node-version: '22'
         registry-url: 'https://registry.npmjs.org/'
@@ -29,10 +30,11 @@ jobs:
     - run: yarn build
     - run: yarn lint
     - name: Check package version
+      id: package_version
       env:
         IS_PRERELEASE: ${{ github.event.release.prerelease }}
       run: |
-        PACKAGE_VERSION=$(node -p "require('./package.json').version")
+        PACKAGE_VERSION=$(jq -r '.version' package.json)
         echo "Package version: $PACKAGE_VERSION"
 
         if [[ "$IS_PRERELEASE" == "true" ]]; then
@@ -41,6 +43,7 @@ jobs:
             echo "❌ Prerelease failed: Package version '$PACKAGE_VERSION' must contain '-beta'"
             exit 1
           fi
+          echo "version=beta" >> $GITHUB_OUTPUT
           echo "✅ Prerelease version check passed"
         else
           # For releases, version must NOT contain -beta
@@ -48,19 +51,15 @@ jobs:
             echo "❌ Release failed: Package version '$PACKAGE_VERSION' cannot contain '-beta'"
             exit 1
           fi
+          echo "version=latest" >> $GITHUB_OUTPUT
           echo "✅ Release version check passed"
         fi
+
     - name: Publish to npm
       env:
-        IS_PRERELEASE: ${{ github.event.release.prerelease }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: |
-        npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
-        if [[ "$IS_PRERELEASE" == "true" ]]; then
-          npm publish --tag beta
-        else
-          npm publish
-        fi
+        RELEASE_TAG: ${{ steps.package_version.outputs.version }}
+      run: npm publish --tag $RELEASE_TAG
+
     - name: Send Discord Notification
       if: ${{ !github.event.release.prerelease }}
       uses: sarisia/actions-status-discord@v1
