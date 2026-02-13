@@ -12,8 +12,6 @@ jobs:
   code_check:
     name: 🔬 PR Checks
     uses: ./.github/workflows/check.yml
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   publish:
     name: 📮 to npm
