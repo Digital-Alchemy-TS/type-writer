@@ -657,7 +657,7 @@ __metadata:
     "@digital-alchemy/core": "*"
     "@digital-alchemy/hass": "*"
   bin:
-    type-writer: ./scripts/run.sh
+    type-writer: ./dist/main.mjs
   languageName: unknown
   linkType: soft
 

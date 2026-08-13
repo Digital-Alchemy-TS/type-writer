@@ -16,7 +16,7 @@
     "url": "https://github.com/zoe-codez",
     "name": "Zoe Codez"
   },
-  "bin": "./scripts/run.sh",
+  "bin": "./dist/main.mjs",
   "files": [
     "dist/**/*",
     "scripts/**/*",
