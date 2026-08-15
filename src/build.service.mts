@@ -142,6 +142,7 @@ export function BuildTypes({ config, logger, hass, type_build }: TServiceParams)
           `  SupportedLanguages,`,
           `  TAreaId,`,
           `  TDeviceId,`,
+          `  TFloorId,`,
           `  TLabelId,`,
           `  WeatherGetForecasts,`,
           `} from "@digital-alchemy/hass";`,
